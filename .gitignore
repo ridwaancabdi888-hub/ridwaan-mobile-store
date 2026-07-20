@@ -1,0 +1,21 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Dependencies (if tooling is ever added)
+node_modules/
+
+# Environment
+.env
+.env.*
+
+# Logs
+*.log
+
+# Deployment
+.vercel/
