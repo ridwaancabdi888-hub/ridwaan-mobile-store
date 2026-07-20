@@ -27,13 +27,17 @@ git clone https://github.com/ridwaancabdi888-hub/ridwaan-mobile-store.git
 cd ridwaan-mobile-store
 ```
 
-Then open `index.html` in your browser, or serve it:
+Then open `index.html` directly, or start a local server with one of these commands:
 
 ```bash
 npx serve .
-# or
+# or (macOS/Linux)
 python3 -m http.server 8000
+# or (Windows)
+py -m http.server 8000
 ```
+
+Open the address printed by `npx serve`, or visit `http://localhost:8000` when using Python.
 
 ## 📁 Project Structure
 
