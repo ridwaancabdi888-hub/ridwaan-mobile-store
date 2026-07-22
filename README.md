@@ -53,6 +53,24 @@ Open the address printed by `npx serve`, or visit `http://localhost:8000` when u
 
 This is a **front-end demo** — the checkout is simulated and no real payments are processed. Product data is illustrative.
 
+## SEO and Google Search Console
+
+Production SEO endpoints:
+
+- Canonical website: https://ridwaan-mobile-store.vercel.app/
+- Sitemap: https://ridwaan-mobile-store.vercel.app/sitemap.xml
+- Robots file: https://ridwaan-mobile-store.vercel.app/robots.txt
+
+To add the site to Google Search Console:
+
+1. Add the URL-prefix property `https://ridwaan-mobile-store.vercel.app/` in [Google Search Console](https://search.google.com/search-console).
+2. Choose HTML tag verification and copy the verification token.
+3. Add `<meta name="google-site-verification" content="YOUR_TOKEN">` inside the `<head>` of `index.html`, deploy, then select **Verify**.
+4. Open **Sitemaps** and submit `sitemap.xml`.
+5. Use **URL Inspection** on the homepage and select **Request Indexing** after the deployment is live.
+
+Search indexing and rankings are controlled by Google and are not guaranteed. This repository is the source for the production domain above; do not point another repository at the same canonical URL unless it is intentionally replacing this deployment.
+
 ---
 
 Built with ❤️ by **Ridwaan** · Hargeisa

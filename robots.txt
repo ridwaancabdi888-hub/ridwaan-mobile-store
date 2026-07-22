@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ridwaan-mobile-store.vercel.app/sitemap.xml

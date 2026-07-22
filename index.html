@@ -3,9 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="Ridwaan Mobile Store — a modern smartphone shopping web app.">
+<meta name="description" content="Explore Ridwaan Mobile Store, a responsive smartphone shopping app demo with product search, cart, checkout, rewards, wishlists, and dark mode.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="theme-color" content="#FAF5EE">
-<title>Ridwaan Mobile Store</title>
+<meta name="color-scheme" content="light dark">
+<title>Ridwaan Mobile Store | Smartphone Shopping App Demo</title>
+<link rel="canonical" href="https://ridwaan-mobile-store.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Ridwaan Mobile Store">
+<meta property="og:title" content="Ridwaan Mobile Store | Smartphone Shopping App Demo">
+<meta property="og:description" content="Explore smartphones, compare options, manage a cart and try a complete mobile-first shopping experience in this front-end demo.">
+<meta property="og:url" content="https://ridwaan-mobile-store.vercel.app/">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ridwaan Mobile Store | Smartphone Shopping App Demo">
+<meta name="twitter:description" content="Try a responsive smartphone shopping demo with search, cart, checkout, wishlists and rewards.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://ridwaan-mobile-store.vercel.app/#website",
+      "url": "https://ridwaan-mobile-store.vercel.app/",
+      "name": "Ridwaan Mobile Store",
+      "description": "A responsive front-end demonstration of a smartphone shopping application.",
+      "inLanguage": "en",
+      "creator": {
+        "@id": "https://ridwaan-mobile-store.vercel.app/#creator"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://ridwaan-mobile-store.vercel.app/#application",
+      "name": "Ridwaan Mobile Store",
+      "url": "https://ridwaan-mobile-store.vercel.app/",
+      "applicationCategory": "ShoppingApplication",
+      "operatingSystem": "Any modern web browser",
+      "description": "A mobile-first smartphone shopping app demo with search, filters, cart, checkout, rewards, wishlists and persistent browser state.",
+      "isAccessibleForFree": true,
+      "author": {
+        "@id": "https://ridwaan-mobile-store.vercel.app/#creator"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://ridwaan-mobile-store.vercel.app/#creator",
+      "name": "Ridwaan",
+      "url": "https://github.com/ridwaancabdi888-hub",
+      "sameAs": [
+        "https://github.com/ridwaancabdi888-hub"
+      ]
+    }
+  ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -21,7 +73,7 @@
         <button class="avatar" id="homeAvatar" aria-label="Open profile">R</button>
         <div class="home-greet">
           <p class="greet-hi">Hello, Ridwaan 👋</p>
-          <p class="greet-sub">Find your next phone</p>
+          <h1 class="greet-sub">Find your next smartphone</h1>
         </div>
         <button class="icon-btn" id="notifBtn" aria-label="Notifications">
           <svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6-1.5-1.7V10a5.5 5.5 0 0 0-4.2-5.35V4a1.3 1.3 0 1 0-2.6 0v.65A5.5 5.5 0 0 0 6.5 10v4.3L5 16a1 1 0 0 0 .75 1.66h12.5A1 1 0 0 0 19 16Z"/></svg>
@@ -76,7 +128,7 @@
     <!-- ================= SHOP ================= -->
     <main class="screen hidden" id="screen-shop" aria-label="Shop">
       <header class="page-head">
-        <h1>Shop</h1>
+        <h2>Shop</h2>
         <button class="icon-btn" id="clearFilters" aria-label="Clear all filters">
           <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
         </button>
@@ -114,7 +166,7 @@
 
     <!-- ================= CART ================= -->
     <main class="screen hidden" id="screen-cart" aria-label="Cart">
-      <header class="page-head"><h1>My cart</h1><span class="pill" id="cartCountPill">0 items</span></header>
+      <header class="page-head"><h2>My cart</h2><span class="pill" id="cartCountPill">0 items</span></header>
       <div id="cartList"></div>
       <div id="cartFooter" class="hidden">
         <div class="promo-row">
@@ -145,7 +197,7 @@
         <button class="icon-btn" data-goto="home" aria-label="Back to home">
           <svg viewBox="0 0 24 24"><path d="m14 6-6 6 6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
         </button>
-        <h1>Rewards</h1><span style="width:42px"></span>
+        <h2>Rewards</h2><span style="width:42px"></span>
       </header>
 
       <section class="rewards-card card-anim" aria-label="Points balance">
@@ -185,7 +237,7 @@
 
     <!-- ================= PROFILE ================= -->
     <main class="screen hidden" id="screen-profile" aria-label="Profile">
-      <header class="page-head"><h1>Profile</h1><span style="width:42px"></span></header>
+      <header class="page-head"><h2>Profile</h2><span style="width:42px"></span></header>
       <section class="profile-card card-anim">
         <div class="avatar big" aria-hidden="true">R</div>
         <div class="pc-info">
