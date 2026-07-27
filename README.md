@@ -1,76 +1,60 @@
-# 📱 Ridwaan Mobile Store
+# Ridwaan Mobile Store
 
-A modern and responsive smartphone shopping web app built with **HTML, CSS and JavaScript** — no frameworks, no build tools.
+A polished, mobile-first smartphone shopping demo built with HTML5, CSS3 and vanilla JavaScript.
 
-## 🌐 Live Demo
+**Live demo:** https://ridwaan-mobile-store.vercel.app
 
-**👉 https://ridwaan-mobile-store.vercel.app**
+## Features
 
-## ✨ Features
+- Home, Shop, Cart, Rewards and Profile screens
+- Sign up, sign in, password reset, persistent sessions and protected customer shopping
+- Installable mobile PWA with Android/Samsung install prompt and offline app shell
+- Role-aware Admin Control Center for inventory, orders, payments and users
+- Product add/edit/delete, user role management and account suspension
+- 12 searchable and filterable smartphones
+- Product details with storage, color and quantity options
+- Persistent cart, wishlist, rewards, orders, profile and theme using localStorage
+- Validated checkout flow and order success experience
+- Animated Gold membership rewards interface
+- Responsive phone-sized desktop presentation and dark mode
 
-- **Mobile-app experience** — phone-frame layout, 5-tab bottom navigation (Home, Shop, Cart, Rewards, Profile), smooth screen transitions
-- **12 smartphones** from 8 brands (Apple, Samsung, Google, Xiaomi, OnePlus, Nothing, Motorola, Honor) with pure-CSS product art
-- **Shop** — live search, brand chips, price-range filter, in-stock filter, and 5 sorting options
-- **Product details** — color swatches, storage options, quantity stepper, wishlist
-- **Cart & checkout** — quantity controls, promo code `RIDWAAN10` (10% off), 500-point redemption, delivery fee logic (free over $800 or for Gold members), form validation, order confirmation with confetti 🎉
-- **Rewards** — animated points ring, 4 membership levels (Bronze → Platinum), "You're Gold" celebration
-- **Profile** — order history, wishlist, saved addresses, payment methods (Cash on Delivery, Zaad, eDahab, Card)
-- **Dark mode** 🌙, three languages (English / Soomaali / العربية), accessible (ARIA labels, focus states, reduced-motion support)
-- **Persistent state** — cart, wishlist, points, orders and settings saved to `localStorage`
+## Demo accounts
 
-## 🚀 Run Locally
+- Admin: `admin@ridwaanstore.com` / `Admin123!`
+- Customer: `demo@ridwaanstore.com` / `Demo123!`
 
-No dependencies needed — it's pure HTML/CSS/JS:
+Authentication and payments are front-end demonstrations stored in the browser with `localStorage`; they do not process real payments.
+
+## Run locally
+
+No dependencies or build process are required. Because service workers do not run reliably from `file://` URLs, use a local HTTP server when testing installation or offline PWA behavior.
+
+From the repository folder, run either:
 
 ```bash
-git clone https://github.com/ridwaancabdi888-hub/ridwaan-mobile-store.git
-cd ridwaan-mobile-store
+python -m http.server 8000
 ```
 
-Then open `index.html` directly, or start a local server with one of these commands:
+or:
 
 ```bash
 npx serve .
-# or (macOS/Linux)
-python3 -m http.server 8000
-# or (Windows)
-py -m http.server 8000
 ```
 
-Open the address printed by `npx serve`, or visit `http://localhost:8000` when using Python.
+Then open `http://localhost:8000` for the Python server, or the URL printed by `serve`.
 
-## 📁 Project Structure
+For a quick UI-only preview, you can still open `index.html` directly in a modern browser, but PWA installation and offline caching may be unavailable.
 
-```
-├── index.html   # App structure — all 6 screens + sheets
-├── style.css    # Design system, layout, animations, dark mode
-└── script.js    # Products data, cart, checkout, rewards, persistence
-```
+## Reset demo data
 
-> **Note:** The Vercel deployment serves a single production-optimized `index.html` with the CSS and JS minified and inlined. This repository contains the readable three-file source code.
+The demo saves accounts, cart items, orders, rewards, preferences and admin changes in the browser. To return the app to its original demo state, clear the site's stored data in the browser and reload the page.
 
-## ⚠️ Disclaimer
+In Chrome or Edge, open **Developer Tools → Application → Storage**, select **Clear site data**, then refresh. On a phone, clear the site's storage from the browser's site settings. This also removes the saved demo session, so sign in again with one of the demo accounts above.
 
-This is a **front-end demo** — the checkout is simulated and no real payments are processed. Product data is illustrative.
+## Deployment
 
-## SEO and Google Search Console
+This is a static site. On Vercel, use the project root as the root directory and leave the build command empty.
 
-Production SEO endpoints:
+## Install on a phone
 
-- Canonical website: https://ridwaan-mobile-store.vercel.app/
-- Sitemap: https://ridwaan-mobile-store.vercel.app/sitemap.xml
-- Robots file: https://ridwaan-mobile-store.vercel.app/robots.txt
-
-To add the site to Google Search Console:
-
-1. Add the URL-prefix property `https://ridwaan-mobile-store.vercel.app/` in [Google Search Console](https://search.google.com/search-console).
-2. Choose HTML tag verification and copy the verification token.
-3. Add `<meta name="google-site-verification" content="YOUR_TOKEN">` inside the `<head>` of `index.html`, deploy, then select **Verify**.
-4. Open **Sitemaps** and submit `sitemap.xml`.
-5. Use **URL Inspection** on the homepage and select **Request Indexing** after the deployment is live.
-
-Search indexing and rankings are controlled by Google and are not guaranteed. This repository is the source for the production domain above; do not point another repository at the same canonical URL unless it is intentionally replacing this deployment.
-
----
-
-Built with ❤️ by **Ridwaan** · Hargeisa
+Open the live site in Chrome or Samsung Internet and tap **Install Mobile App**. If the browser does not show the prompt, open its menu and choose **Add to Home screen** or **Install app**.
