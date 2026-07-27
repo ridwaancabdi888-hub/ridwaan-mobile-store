@@ -1,762 +1,305 @@
-/* =========================================================
-   Ridwaan Mobile Store — script.js
-   Vanilla JS. State persisted in localStorage under "rms:v1".
-   ========================================================= */
-"use strict";
-
-/* ---------------- Product data ---------------- */
-// gr = [thumb background, phone body] gradients for the CSS product art.
-const PRODUCTS = [
-  {id:"ip16pm", name:"iPhone 16 Pro Max", brand:"Apple", price:1199, old:1299, rating:4.9, reviews:2381,
-   storage:["256GB","512GB","1TB"], colors:["#3b3b40","#d9d3c7","#c9b380","#3a4a5a"], stock:true, points:240,
-   gr:["#EFE3D2,#E4CBAA","#5a5a62,#17171d"],
-   desc:"Titanium design with the A18 Pro chip, a 48MP Fusion camera system, Camera Control, and the best iPhone battery life ever."},
-  {id:"ip15", name:"iPhone 15", brand:"Apple", price:699, old:799, rating:4.7, reviews:4102,
-   storage:["128GB","256GB","512GB"], colors:["#f4c9d2","#f7e9a8","#b9d9c9","#a7b8d8","#2f2f33"], stock:true, points:140,
-   gr:["#F6E7EA,#EFC9D2","#e7aab8,#b06077"],
-   desc:"Dynamic Island, a 48MP main camera with 2× telephoto quality, USB-C, and all-day battery in a color-infused glass design."},
-  {id:"s25u", name:"Samsung Galaxy S25 Ultra", brand:"Samsung", price:1149, old:1299, rating:4.8, reviews:1954,
-   storage:["256GB","512GB","1TB"], colors:["#2b2f38","#cfd4dc","#3c4f6e","#d9c9a8"], stock:true, points:230,
-   gr:["#E3E8EF,#C9D2DF","#4a5568,#171c26"],
-   desc:"Galaxy AI, a 200MP camera, built-in S Pen, and the Snapdragon 8 Elite for Galaxy inside a slim titanium frame."},
-  {id:"a56", name:"Samsung Galaxy A56", brand:"Samsung", price:449, old:499, rating:4.4, reviews:3287,
-   storage:["128GB","256GB"], colors:["#b8c6e6","#3a3d45","#e7dfd2","#c8e3d4"], stock:true, points:90,
-   gr:["#E7EDF8,#C9D6F0","#8ea4d6,#4a5f92"],
-   desc:"Awesome value: a bright 120Hz Super AMOLED display, 50MP OIS camera, IP67 rating, and six years of updates."},
-  {id:"px9p", name:"Google Pixel 9 Pro", brand:"Google", price:899, old:999, rating:4.7, reviews:1622,
-   storage:["128GB","256GB","512GB"], colors:["#e8e3da","#2e2f33","#dfc6ce","#b9c8bd"], stock:true, points:180,
-   gr:["#EAE6DE,#D6CFC2","#7d7a72,#3c3a36"],
-   desc:"Gemini built in, a pro triple camera with Super Res Zoom, the Tensor G4 chip, and seven years of OS updates."},
-  {id:"px8a", name:"Google Pixel 8a", brand:"Google", price:399, old:499, rating:4.5, reviews:2870,
-   storage:["128GB","256GB"], colors:["#a9c8e8","#2e2f33","#e8e3da","#c9e2c9"], stock:true, points:80,
-   gr:["#E2ECF7,#BFD7EE","#7fb0dd,#3f6ea8"],
-   desc:"The best of Pixel for less: Tensor G3, a stunning 6.1-inch Actua display, and amazing AI-powered photo editing."},
-  {id:"x15u", name:"Xiaomi 15 Ultra", brand:"Xiaomi", price:1099, old:1199, rating:4.6, reviews:987,
-   storage:["256GB","512GB","1TB"], colors:["#1f1f23","#e6e2da","#5a4a3a"], stock:true, points:220,
-   gr:["#EDE7DE,#DBCFBE","#4d4438,#1c1712"],
-   desc:"Co-engineered Leica optics with a 1-inch main sensor, 200MP periscope zoom, and blazing 90W HyperCharge."},
-  {id:"rn14p", name:"Redmi Note 14 Pro", brand:"Xiaomi", price:329, old:379, rating:4.3, reviews:5241,
-   storage:["128GB","256GB","512GB"], colors:["#2c2c30","#cfe0ef","#e9d8c8"], stock:false, points:66,
-   gr:["#E7EEF4,#CBDCEA","#9db8cd,#4e6d86"],
-   desc:"A 200MP AI camera, curved 120Hz AMOLED display, IP68 protection, and huge battery life at a friendly price."},
-  {id:"op13", name:"OnePlus 13", brand:"OnePlus", price:899, old:999, rating:4.7, reviews:1348,
-   storage:["256GB","512GB"], colors:["#20242c","#e8e4dd","#3a5a8c"], stock:true, points:180,
-   gr:["#E5EAF2,#C7D3E6","#5c78a8,#26374f"],
-   desc:"Snapdragon 8 Elite, Hasselblad cameras, a radiant 2K ProXDR display, and 100W SUPERVOOC fast charging."},
-  {id:"np3", name:"Nothing Phone 3", brand:"Nothing", price:799, old:849, rating:4.5, reviews:764,
-   storage:["256GB","512GB"], colors:["#f2f2f2","#1c1c1e"], stock:true, points:160,
-   gr:["#EFEFEF,#DCDCDC","#c9c9cc,#8b8b90"],
-   desc:"The iconic transparent design with the new Glyph Matrix, a fast dual 50MP camera, and clean Nothing OS."},
-  {id:"me60p", name:"Motorola Edge 60 Pro", brand:"Motorola", price:549, old:649, rating:4.4, reviews:892,
-   storage:["256GB","512GB"], colors:["#3d2f4f","#2c4437","#5a4632"], stock:true, points:110,
-   gr:["#EAE4F1,#D3C6E4","#8f7cae,#4a3a66"],
-   desc:"A quad-curved pOLED display, 50MP camera tuned with Pantone color, military-grade toughness, and 90W charging."},
-  {id:"hm7p", name:"Honor Magic7 Pro", brand:"Honor", price:999, old:1099, rating:4.5, reviews:611,
-   storage:["256GB","512GB"], colors:["#26303e","#e6e0d5","#a8bfd6"], stock:true, points:200,
-   gr:["#E4EAF1,#C6D4E4","#6d86a3,#2c3e52"],
-   desc:"AI Falcon camera with a 200MP telephoto, huge silicon-carbon battery, and an ultra-bright quad-curved display."},
+/* Ridwaan Mobile Store — dependency-free mobile commerce demo */
+const SEED_PRODUCTS = [
+  {id:1,name:'iPhone 16 Pro Max',brand:'Apple',image:'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&w=700&q=85',price:1199,oldPrice:1399,discount:14,rating:4.9,reviews:824,storage:['256GB','512GB','1TB'],colors:[['Desert Titanium','#bba48f'],['Black Titanium','#292725'],['Natural Titanium','#c5bfb5']],stock:true,description:'A premium titanium smartphone with an immersive display, pro camera system and all-day battery life.',points:240},
+  {id:2,name:'iPhone 15',brand:'Apple',image:'https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=700&q=85',price:699,oldPrice:799,discount:13,rating:4.7,reviews:612,storage:['128GB','256GB','512GB'],colors:[['Pink','#e8c8ca'],['Blue','#c8d8dc'],['Black','#30302e']],stock:true,description:'A bright, dependable iPhone with a powerful camera, Dynamic Island and smooth everyday performance.',points:140},
+  {id:3,name:'Samsung Galaxy S25 Ultra',brand:'Samsung',image:'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=700&q=85',price:1299,oldPrice:1499,discount:13,rating:4.9,reviews:733,storage:['256GB','512GB','1TB'],colors:[['Titanium Gray','#8e8a82'],['Titanium Black','#272727'],['Titanium Blue','#a9bac7']],stock:true,description:'Flagship Galaxy performance with an integrated S Pen, intelligent camera tools and a vivid edge-to-edge display.',points:260},
+  {id:4,name:'Samsung Galaxy A56',brand:'Samsung',image:'https://images.unsplash.com/photo-1605236453806-6ff36851218e?auto=format&fit=crop&w=700&q=85',price:449,oldPrice:499,discount:10,rating:4.6,reviews:381,storage:['128GB','256GB'],colors:[['Awesome Graphite','#414141'],['Awesome Olive','#adb49c'],['Awesome Pink','#e6c6c4']],stock:true,description:'A refined mid-range Galaxy with a crisp AMOLED display, reliable cameras and impressive battery endurance.',points:90},
+  {id:5,name:'Google Pixel 9 Pro',brand:'Google',image:'https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=700&q=85',price:999,oldPrice:1099,discount:9,rating:4.8,reviews:426,storage:['128GB','256GB','512GB'],colors:[['Obsidian','#292928'],['Porcelain','#e5ded0'],['Hazel','#a6a798']],stock:true,description:'Google’s most polished phone with a brilliant camera, helpful on-device intelligence and seven years of updates.',points:200},
+  {id:6,name:'Google Pixel 8a',brand:'Google',image:'https://images.unsplash.com/photo-1580910051074-3eb694886505?auto=format&fit=crop&w=700&q=85',price:449,oldPrice:549,discount:18,rating:4.6,reviews:297,storage:['128GB','256GB'],colors:[['Bay','#9ac5d5'],['Obsidian','#292929'],['Porcelain','#e5ddd1']],stock:false,description:'A compact Pixel experience with excellent photography, clean software and dependable everyday speed.',points:90},
+  {id:7,name:'Xiaomi 15 Ultra',brand:'Xiaomi',image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=700&q=85',price:1099,oldPrice:1249,discount:12,rating:4.8,reviews:344,storage:['256GB','512GB','1TB'],colors:[['Black','#222'],['White','#e8e5df'],['Silver Chrome','#bfc2c4']],stock:true,description:'A photography-first flagship with a large sensor camera, bold design and extremely fast charging.',points:220},
+  {id:8,name:'Redmi Note 14 Pro',brand:'Xiaomi',image:'https://images.unsplash.com/photo-1556656793-08538906a9f8?auto=format&fit=crop&w=700&q=85',price:379,oldPrice:449,discount:16,rating:4.5,reviews:518,storage:['128GB','256GB'],colors:[['Midnight Black','#292929'],['Lavender Purple','#b8a9c7'],['Coral Green','#8ca99d']],stock:true,description:'Exceptional value with a smooth display, detailed main camera and a battery made for busy days.',points:76},
+  {id:9,name:'OnePlus 13',brand:'OnePlus',image:'https://images.unsplash.com/photo-1567581935884-3349723552ca?auto=format&fit=crop&w=700&q=85',price:899,oldPrice:999,discount:10,rating:4.8,reviews:274,storage:['256GB','512GB'],colors:[['Black Eclipse','#292728'],['Arctic Dawn','#e6e4df'],['Midnight Ocean','#263b47']],stock:true,description:'Fast and fluid flagship performance, a premium camera system and rapid charging in an elegant body.',points:180},
+  {id:10,name:'Nothing Phone 3',brand:'Nothing',image:'https://images.unsplash.com/photo-1603184017968-953f59cd2e37?auto=format&fit=crop&w=700&q=85',price:799,oldPrice:899,discount:11,rating:4.6,reviews:196,storage:['256GB','512GB'],colors:[['White','#e9e7e1'],['Black','#242424']],stock:true,description:'Distinct transparent-inspired design, expressive light interactions and a focused, delightfully clean interface.',points:160},
+  {id:11,name:'Motorola Edge 60 Pro',brand:'Motorola',image:'https://images.unsplash.com/photo-1523206489230-c012c64b2b48?auto=format&fit=crop&w=700&q=85',price:649,oldPrice:749,discount:13,rating:4.5,reviews:163,storage:['256GB','512GB'],colors:[['Shadow','#34302e'],['Ocean Blue','#627f91'],['Dune','#c4aa8c']],stock:true,description:'A slim premium phone with a curved display, balanced cameras and clean software tuned for speed.',points:130},
+  {id:12,name:'Honor Magic7 Pro',brand:'Honor',image:'https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?auto=format&fit=crop&w=700&q=85',price:999,oldPrice:1199,discount:17,rating:4.7,reviews:221,storage:['256GB','512GB'],colors:[['Lunar Shadow','#57534f'],['Breeze Blue','#b5cad3'],['Black','#252525']],stock:true,description:'A sophisticated flagship with powerful portrait photography, a vibrant display and long-lasting performance.',points:200}
 ];
-const BRANDS = ["All","Apple","Samsung","Google","Xiaomi","OnePlus","Nothing","Motorola","Honor"];
-const LEVELS = [
-  {name:"Bronze",   min:0,    max:999,  icon:"🥉", perks:"Member prices"},
-  {name:"Silver",   min:1000, max:1799, icon:"🥈", perks:"Free delivery over $500"},
-  {name:"Gold",     min:1800, max:2999, icon:"🥇", perks:"Free delivery + 1.5× points"},
-  {name:"Platinum", min:3000, max:Infinity, icon:"💎", perks:"VIP support + early access"},
-];
-const POINT_VALUE = 0.02;       // 1 point = $0.02
-const POINTS_REDEEM = 500;      // redeemable chunk in cart
-const DELIVERY_FEE = 15;
-const FREE_DELIVERY_OVER = 800;
 
-/* ---------------- State (localStorage) ---------------- */
-const STORE_KEY = "rms:v1";
-const defaultState = () => ({
-  cart: [],                      // {id, storage, color, qty}
-  wishlist: [],
-  points: 1850,                  // demo user starts Gold
-  orders: [],
-  activity: [
-    {name:"Welcome bonus", pts:+150, date:"Jun 02"},
-    {name:"Order #RMS-48213", pts:+180, date:"Jun 21"},
-    {name:"Redeemed at checkout", pts:-500, date:"Jul 01"},
-    {name:"Order #RMS-51907", pts:+220, date:"Jul 09"},
+const DEFAULTS = {
+  page:'home', cart:[], wishlist:[], points:1850, orders:[], theme:'light', notifications:true,
+  biometric:true, language:'English', promo:'', usePoints:false,
+  session:null, products:SEED_PRODUCTS,
+  users:[
+    {id:'usr_admin',name:'Store Administrator',email:'admin@ridwaanstore.com',phone:'+252 63 0000001',passwordHash:hashText('Admin123!'),role:'admin',status:'active',createdAt:'2026-07-18T00:00:00.000Z'},
+    {id:'usr_demo',name:'Ridwaan Customer',email:'demo@ridwaanstore.com',phone:'+252 63 0000002',passwordHash:hashText('Demo123!'),role:'customer',status:'active',createdAt:'2026-07-18T00:00:00.000Z'}
   ],
-  promo: null,
-  usePoints: false,
-  prefs: { dark:false, notif:true, bio:false, lang:"en" },
-  goldSeen: false,
-});
-let S = loadState();
-function loadState(){
-  try{
-    const raw = localStorage.getItem(STORE_KEY);
-    if(!raw) return defaultState();
-    return Object.assign(defaultState(), JSON.parse(raw));
-  }catch(e){ console.warn("State reset:", e); return defaultState(); }
-}
-function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){ /* storage full/blocked */ } }
+  profile:{name:'Ridwaan',email:'ridwaan@example.com',phone:'',address:'',city:'Hargeisa'}
+};
+const state = {...DEFAULTS, ...readJSON('rms_state',{})};
+state.profile = {...DEFAULTS.profile,...(state.profile||{})};
+state.users = Array.isArray(state.users) ? state.users : DEFAULTS.users.map(u=>({...u}));
+if(!state.users.some(u=>u.role==='admin')) state.users.unshift({...DEFAULTS.users[0]});
+let PRODUCTS = Array.isArray(state.products)&&state.products.length ? state.products : SEED_PRODUCTS.map(p=>({...p}));
+state.products = PRODUCTS;
+let shop = {query:'',brand:'All',maxPrice:1500,availability:'all',sort:'featured'};
+let selected = null;
+let detailChoice = {storage:'',color:'',qty:1};
+let goldShown = false;
+let installPromptEvent = null;
+const app = document.getElementById('appView');
+const nav = document.getElementById('bottomNav');
+const modalRoot = document.getElementById('modalRoot');
 
-/* ---------------- Tiny helpers ---------------- */
-const $  = (sel, root=document) => root.querySelector(sel);
-const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
-const money = n => "$" + n.toLocaleString("en-US", {maximumFractionDigits:2});
-const prod = id => PRODUCTS.find(p => p.id === id);
-const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const pct = p => Math.round((1 - p.price/p.old) * 100);
-function stars(r){ return "★".repeat(Math.round(r)); }
-function levelFor(pts){ return LEVELS.find(l => pts >= l.min && pts <= l.max) || LEVELS[LEVELS.length-1]; }
+const icon = (name, cls='') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"></use></svg>`;
+const money = n => `$${Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
+const product = id => PRODUCTS.find(p=>p.id===Number(id));
+function readJSON(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
+function save(){localStorage.setItem('rms_state',JSON.stringify({...state,page:'home'}));document.body.classList.toggle('dark',state.theme==='dark');document.querySelector('meta[name="theme-color"]').content=state.theme==='dark'?'#171210':'#fbf5ef'}
+function safe(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function hashText(value=''){let h=2166136261;for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
+function currentUser(){return state.users.find(u=>u.id===state.session?.userId&&u.status==='active')||null}
+function isAdmin(){return ['admin','manager'].includes(currentUser()?.role)}
 
-function toast(msg){
-  const t = document.createElement("div");
-  t.className = "toast"; t.textContent = msg;
-  $("#toastWrap").appendChild(t);
-  setTimeout(() => t.remove(), 2700);
-}
-
-/* Phone illustration markup — never breaks, no network needed */
-function phoneArt(p, cls=""){
-  const [bg, body] = p.gr;
-  return `<div class="ph ${cls}" role="img" aria-label="${esc(p.name)} in ${esc(p.brand)} style"
-    style="--pi-bg:linear-gradient(140deg,${bg});--pi-phone:linear-gradient(160deg,${body})">
-    <div class="body"><div class="cam"></div></div></div>`;
-}
-
-/* ---------------- Navigation ---------------- */
-let activeTab = "home";
-function showTab(name){
-  if(name === activeTab && $("#screen-detail").classList.contains("hidden")) return;
-  closeDetail(true);
-  activeTab = name;
-  $$(".screen").forEach(s => s.classList.add("hidden"));
-  const sc = $("#screen-" + name);
-  sc.classList.remove("hidden");
-  sc.style.animation = "none"; void sc.offsetWidth; sc.style.animation = "";
-  $$(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
-  if(name === "cart") renderCart();
-  if(name === "rewards") renderRewards(true);
-  if(name === "profile") renderProfileMeta();
-  if(name === "shop") renderShop();
-}
-$$(".tab").forEach(t => t.addEventListener("click", () => showTab(t.dataset.tab)));
-document.addEventListener("click", e => {
-  const go = e.target.closest("[data-goto]");
-  if(go) showTab(go.dataset.goto);
-});
-
-/* ---------------- Product cards ---------------- */
-function cardHTML(p, i=0){
-  const inWish = S.wishlist.includes(p.id);
-  return `<article class="p-card" style="animation-delay:${i*40}ms" data-open="${p.id}">
-    <div class="p-thumb">${phoneArt(p)}
-      <span class="badge-off">-${pct(p)}%</span>
-      <button class="wish ${inWish ? "on":""}" data-wish="${p.id}" aria-label="${inWish?"Remove from":"Add to"} wishlist" aria-pressed="${inWish}">${inWish?"♥":"♡"}</button>
-      ${p.stock ? "" : `<span class="oos">Out of stock</span>`}
-    </div>
-    <span class="p-brand">${esc(p.brand)}</span>
-    <h4 class="p-name">${esc(p.name)}</h4>
-    <p class="p-rate"><b>${stars(p.rating)}</b> ${p.rating} · ${p.reviews.toLocaleString()} reviews</p>
-    <div class="p-foot">
-      <span class="p-price">${money(p.price)}</span>
-      <span class="p-old">${money(p.old)}</span>
-      <button class="add-mini" data-add="${p.id}" aria-label="Add ${esc(p.name)} to cart" ${p.stock?"":"disabled"}>+</button>
-    </div>
-  </article>`;
-}
-
-document.addEventListener("click", e => {
-  const w = e.target.closest("[data-wish]");
-  if(w){ e.stopPropagation(); toggleWish(w.dataset.wish); return; }
-  const a = e.target.closest("[data-add]");
-  if(a){ e.stopPropagation(); quickAdd(a.dataset.add, a); return; }
-  const o = e.target.closest("[data-open]");
-  if(o){ openDetail(o.dataset.open); }
-});
-
-function toggleWish(id){
-  const i = S.wishlist.indexOf(id);
-  if(i >= 0){ S.wishlist.splice(i,1); toast("Removed from wishlist"); }
-  else { S.wishlist.push(id); toast("Saved to wishlist ♥"); }
+function init(){
+  setupPWA();
+  document.body.classList.toggle('dark',state.theme==='dark');
+  updateClock(); setInterval(updateClock,30000);
   save();
-  $$(`[data-wish="${id}"]`).forEach(b => {
-    const on = S.wishlist.includes(id);
-    b.classList.toggle("on", on); b.textContent = on ? "♥" : "♡";
-    b.setAttribute("aria-pressed", on);
-  });
-  if(detailId === id) syncDetailWish();
-  renderProfileMeta();
+  const user=currentUser();
+  if(!user){state.session=null;renderAuth('signin')}
+  else if(['admin','manager'].includes(user.role)) setPage('admin')
+  else {renderNav();renderSkeleton();setTimeout(()=>setPage('home'),650)}
+  window.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
 }
-
-function quickAdd(id, btn){
-  const p = prod(id);
-  if(!p.stock){ toast("Sorry, this phone is out of stock"); return; }
-  addToCart(id, p.storage[0], p.colors[0], 1);
-  if(btn){ btn.animate([{transform:"scale(1)"},{transform:"scale(1.4) rotate(90deg)"},{transform:"scale(1)"}],{duration:320,easing:"ease-out"}); }
+function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
+function updateInstallUI(){const button=document.getElementById('pwaInstallFab');if(button)button.hidden=isStandalone()}
+function setupPWA(){
+  updateInstallUI();
+  if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}),{once:true});
+  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPromptEvent=event;updateInstallUI()});
+  window.addEventListener('appinstalled',()=>{installPromptEvent=null;updateInstallUI();toast('Ridwaan Store installed successfully')});
 }
-
-/* ---------------- Home ---------------- */
-function renderHome(){
-  const hero = prod("ip16pm");
-  $("#heroArt").innerHTML = phoneArt(hero);
-  $("#homeBrands").innerHTML = BRANDS.slice(0,6).map(b =>
-    `<button class="chip ${b==="All"?"active":""}" data-hbrand="${b}">${b}</button>`).join("");
-  const popular = [...PRODUCTS].sort((a,b) => b.rating - a.rating).slice(0,6);
-  const offers  = [...PRODUCTS].sort((a,b) => pct(b) - pct(a)).slice(0,6);
-  $("#popularRow").innerHTML = popular.map(cardHTML).join("");
-  $("#offersRow").innerHTML  = offers.map(cardHTML).join("");
-  updateMiniRewards();
-}
-$("#homeBrands")?.addEventListener?.("click", ()=>{}); // delegated below
-document.addEventListener("click", e => {
-  const hb = e.target.closest("[data-hbrand]");
-  if(hb){ filters.brand = hb.dataset.hbrand; showTab("shop"); }
-});
-$("#heroShop").addEventListener("click", () => openDetail("ip16pm"));
-$("#homeAvatar").addEventListener("click", () => showTab("profile"));
-$("#homeRewards").addEventListener("click", () => showTab("rewards"));
-$("#homeRewards").addEventListener("keydown", e => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); showTab("rewards"); }});
-$("#notifBtn").addEventListener("click", () => toast(S.prefs.notif ? "You're all caught up 🎉" : "Notifications are off"));
-$("#homeFilterBtn").addEventListener("click", () => { showTab("shop"); setFiltersOpen(true); });
-$("#homeSearch").addEventListener("input", e => {
-  filters.q = e.target.value;
-  $("#shopSearch").value = e.target.value;
-});
-$("#homeSearch").addEventListener("keydown", e => { if(e.key === "Enter") showTab("shop"); });
-function updateMiniRewards(){
-  $("#miniPts").textContent = S.points.toLocaleString();
-  $("#miniLevelText").textContent = `${levelFor(S.points).name} member · ${money(S.points*POINT_VALUE)} value`;
-}
-
-/* ---------------- Shop: search / filter / sort ---------------- */
-const filters = { q:"", brand:"All", maxPrice:1500, inStock:false, sort:"featured" };
-
-function renderShopBrands(){
-  $("#shopBrands").innerHTML = BRANDS.map(b =>
-    `<button class="chip ${filters.brand===b?"active":""}" data-sbrand="${b}">${b}</button>`).join("");
-}
-document.addEventListener("click", e => {
-  const sb = e.target.closest("[data-sbrand]");
-  if(sb){ filters.brand = sb.dataset.sbrand; renderShop(); }
-});
-
-function filteredProducts(){
-  let list = PRODUCTS.filter(p =>
-    (filters.brand === "All" || p.brand === filters.brand) &&
-    p.price <= filters.maxPrice &&
-    (!filters.inStock || p.stock) &&
-    (p.name + " " + p.brand).toLowerCase().includes(filters.q.trim().toLowerCase())
-  );
-  const by = {
-    "price-asc": (a,b) => a.price - b.price,
-    "price-desc": (a,b) => b.price - a.price,
-    "rating": (a,b) => b.rating - a.rating,
-    "discount": (a,b) => pct(b) - pct(a),
-  }[filters.sort];
-  if(by) list.sort(by);
-  return list;
-}
-
-function renderShop(){
-  renderShopBrands();
-  $("#shopSearch").value = filters.q;
-  const list = filteredProducts();
-  $("#shopCount").textContent = `${list.length} phone${list.length===1?"":"s"} found`;
-  $("#shopGrid").innerHTML = list.length
-    ? list.map(cardHTML).join("")
-    : `<div class="empty" style="grid-column:1/-1"><div class="empty-art">🔍</div>
-       <h2>No matches</h2><p>Try a different search or clear your filters.</p></div>`;
-}
-$("#shopSearch").addEventListener("input", e => { filters.q = e.target.value; renderShop(); });
-$("#sortSel").addEventListener("change", e => { filters.sort = e.target.value; renderShop(); });
-$("#priceRange").addEventListener("input", e => {
-  filters.maxPrice = +e.target.value;
-  $("#priceLabel").textContent = money(filters.maxPrice);
-  renderShop();
-});
-$("#inStockOnly").addEventListener("change", e => { filters.inStock = e.target.checked; renderShop(); });
-function setFiltersOpen(open){
-  $("#filtersPanel").classList.toggle("hidden", !open);
-  $("#shopFilterBtn").setAttribute("aria-expanded", open);
-}
-$("#shopFilterBtn").addEventListener("click", () =>
-  setFiltersOpen($("#filtersPanel").classList.contains("hidden")));
-$("#clearFilters").addEventListener("click", () => {
-  Object.assign(filters, { q:"", brand:"All", maxPrice:1500, inStock:false, sort:"featured" });
-  $("#sortSel").value = "featured"; $("#priceRange").value = 1500;
-  $("#priceLabel").textContent = money(1500); $("#inStockOnly").checked = false;
-  $("#homeSearch").value = "";
-  renderShop(); toast("Filters cleared");
-});
-
-/* ---------------- Product detail ---------------- */
-let detailId = null, sel = { storage:null, color:null, qty:1 };
-
-function openDetail(id){
-  const p = prod(id);
-  detailId = id;
-  sel = { storage:p.storage[0], color:p.colors[0], qty:1 };
-  $("#detailBody").innerHTML = `
-    <div class="d-img">${phoneArt(p, "lg")}</div>
-    <div class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
-    <div class="d-body">
-      <div>
-        <p class="d-brand">${esc(p.brand)}</p>
-        <h1 class="d-name">${esc(p.name)}</h1>
-        <p class="d-rate"><b>${stars(p.rating)}</b> ${p.rating} · ${p.reviews.toLocaleString()} reviews</p>
-      </div>
-      <div class="d-price"><strong>${money(p.price)}</strong><s>${money(p.old)}</s><span class="d-off">Save ${pct(p)}%</span></div>
-      <p class="d-desc">${esc(p.desc)}</p>
-      <div><p class="opt-title">Color</p>
-        <div class="opt-row" id="colorRow">${p.colors.map((c,i) =>
-          `<button class="swatch ${i===0?"on":""}" data-color="${c}" style="background:${c}" aria-label="Color option ${i+1}"></button>`).join("")}
-        </div></div>
-      <div><p class="opt-title">Storage</p>
-        <div class="opt-row" id="stoRow">${p.storage.map((s,i) =>
-          `<button class="opt ${i===0?"on":""}" data-sto="${s}">${s}</button>`).join("")}
-        </div></div>
-      <div class="d-meta">
-        <span class="stock ${p.stock?"in":"out"}">${p.stock?"● In stock":"● Out of stock"}</span>
-        <span class="earn">✨ Earn ${p.points} pts</span>
-        <div class="qty" style="margin-left:auto">
-          <button id="qMinus" aria-label="Decrease quantity">−</button>
-          <span id="qVal" aria-live="polite">1</span>
-          <button id="qPlus" aria-label="Increase quantity">+</button>
-        </div>
-      </div>
-    </div>`;
-  $("#detailAdd").disabled = !p.stock;
-  $("#detailAdd").textContent = p.stock ? "Add to cart" : "Out of stock";
-  syncDetailWish(); syncDetailTotal();
-  $("#screen-detail").classList.remove("hidden");
-  $("#screen-detail").scrollTop = 0;
-
-  $("#colorRow").addEventListener("click", e => {
-    const b = e.target.closest("[data-color]"); if(!b) return;
-    sel.color = b.dataset.color;
-    $$("#colorRow .swatch").forEach(x => x.classList.toggle("on", x === b));
-  });
-  $("#stoRow").addEventListener("click", e => {
-    const b = e.target.closest("[data-sto]"); if(!b) return;
-    sel.storage = b.dataset.sto;
-    $$("#stoRow .opt").forEach(x => x.classList.toggle("on", x === b));
-  });
-  $("#qMinus").addEventListener("click", () => { sel.qty = Math.max(1, sel.qty-1); syncQty(); });
-  $("#qPlus").addEventListener("click", () => { sel.qty = Math.min(9, sel.qty+1); syncQty(); });
-}
-function syncQty(){ $("#qVal").textContent = sel.qty; syncDetailTotal(); }
-function syncDetailTotal(){ $("#detailTotal").textContent = money(prod(detailId).price * sel.qty); }
-function syncDetailWish(){
-  const on = S.wishlist.includes(detailId);
-  const b = $("#detailWish");
-  b.textContent = on ? "♥" : "♡";
-  b.classList.toggle("on", on);
-  b.setAttribute("aria-label", on ? "Remove from wishlist" : "Add to wishlist");
-}
-function closeDetail(silent){
-  if($("#screen-detail").classList.contains("hidden")) return;
-  $("#screen-detail").classList.add("hidden");
-  if(!silent) detailId = null;
-}
-$("#detailBack").addEventListener("click", () => closeDetail());
-$("#detailWish").addEventListener("click", () => toggleWish(detailId));
-$("#detailAdd").addEventListener("click", () => {
-  addToCart(detailId, sel.storage, sel.color, sel.qty);
-  closeDetail();
-  showTab("cart");
-});
-
-/* ---------------- Cart ---------------- */
-function addToCart(id, storage, color, qty){
-  const line = S.cart.find(l => l.id===id && l.storage===storage && l.color===color);
-  if(line) line.qty = Math.min(9, line.qty + qty);
-  else S.cart.push({ id, storage, color, qty });
-  save();
-  updateCartBadge(true);
-  toast(`${prod(id).name} added to cart`);
-  if(activeTab === "cart") renderCart();
-}
-function cartCount(){ return S.cart.reduce((n,l) => n + l.qty, 0); }
-function cartSubtotal(){ return S.cart.reduce((n,l) => n + prod(l.id).price * l.qty, 0); }
-function cartTotals(){
-  const sub = cartSubtotal();
-  const delivery = S.cart.length === 0 ? 0 :
-    (sub >= FREE_DELIVERY_OVER || levelFor(S.points).name === "Gold" || levelFor(S.points).name === "Platinum") ? 0 : DELIVERY_FEE;
-  const promoOff = S.promo === "RIDWAAN10" ? Math.round(sub * 0.10) : 0;
-  const ptsAvail = S.usePoints && S.points >= POINTS_REDEEM ? POINTS_REDEEM * POINT_VALUE : 0;
-  const ptsOff = Math.min(ptsAvail, Math.max(0, sub + delivery - promoOff));
-  const total = Math.max(0, sub + delivery - promoOff - ptsOff);
-  return { sub, delivery, promoOff, ptsOff, total };
-}
-function updateCartBadge(bump){
-  const n = cartCount(), b = $("#cartBadge");
-  b.textContent = n;
-  b.classList.toggle("hidden", n === 0);
-  if(bump && n > 0){ b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); }
-}
-
-function renderCart(){
-  const list = $("#cartList");
-  const empty = S.cart.length === 0;
-  $("#cartEmpty").classList.toggle("hidden", !empty);
-  $("#cartFooter").classList.toggle("hidden", empty);
-  $("#cartCountPill").textContent = `${cartCount()} item${cartCount()===1?"":"s"}`;
-  list.innerHTML = empty ? "" : S.cart.map((l,i) => {
-    const p = prod(l.id);
-    return `<div class="c-item" style="animation-delay:${i*50}ms" data-line="${i}">
-      <div class="c-thumb">${phoneArt(p)}</div>
-      <div class="c-info">
-        <p class="c-name">${esc(p.name)}</p>
-        <p class="c-var">${esc(l.storage)} · <span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:${esc(l.color)};vertical-align:-1px;border:1px solid var(--line)"></span></p>
-        <p class="c-price">${money(p.price * l.qty)}</p>
-      </div>
-      <div class="c-side">
-        <button class="c-remove" data-rm="${i}" aria-label="Remove ${esc(p.name)}">✕</button>
-        <div class="qty">
-          <button data-dec="${i}" aria-label="Decrease quantity">−</button>
-          <span>${l.qty}</span>
-          <button data-inc="${i}" aria-label="Increase quantity">+</button>
-        </div>
-      </div>
-    </div>`;
-  }).join("");
-  const t = cartTotals();
-  $("#sumSub").textContent = money(t.sub);
-  $("#sumDel").textContent = t.delivery === 0 ? "Free" : money(t.delivery);
-  $("#rowPromo").classList.toggle("hidden", t.promoOff === 0);
-  $("#sumPromo").textContent = "–" + money(t.promoOff);
-  $("#sumPts").textContent = "–" + money(t.ptsOff);
-  $("#usePointsBtn").textContent = S.usePoints ? "Remove points" : `Use ${POINTS_REDEEM} pts`;
-  $("#sumTotal").textContent = money(t.total);
-  $("#promoInput").value = S.promo || "";
-}
-$("#cartList").addEventListener("click", e => {
-  const rm = e.target.closest("[data-rm]");
-  const inc = e.target.closest("[data-inc]");
-  const dec = e.target.closest("[data-dec]");
-  if(rm){
-    const i = +rm.dataset.rm, el = $(`[data-line="${i}"]`);
-    el.classList.add("removing");
-    setTimeout(() => { S.cart.splice(i,1); save(); updateCartBadge(); renderCart(); }, 260);
-    toast("Removed from cart");
-  }
-  if(inc){ S.cart[+inc.dataset.inc].qty = Math.min(9, S.cart[+inc.dataset.inc].qty + 1); save(); updateCartBadge(true); renderCart(); }
-  if(dec){
-    const l = S.cart[+dec.dataset.dec];
-    if(l.qty > 1) l.qty--; else S.cart.splice(+dec.dataset.dec,1);
-    save(); updateCartBadge(); renderCart();
-  }
-});
-$("#applyPromo").addEventListener("click", () => {
-  const code = $("#promoInput").value.trim().toUpperCase();
-  if(code === "RIDWAAN10"){ S.promo = code; toast("Promo applied: 10% off 🎉"); }
-  else if(code === ""){ S.promo = null; toast("Promo removed"); }
-  else { toast("That promo code isn't valid"); return; }
-  save(); renderCart();
-});
-$("#usePointsBtn").addEventListener("click", () => {
-  if(!S.usePoints && S.points < POINTS_REDEEM){ toast(`You need ${POINTS_REDEEM} points to redeem`); return; }
-  S.usePoints = !S.usePoints; save(); renderCart();
-  toast(S.usePoints ? `${POINTS_REDEEM} points applied` : "Points removed");
-});
-
-/* ---------------- Sheets / overlay ---------------- */
-let openSheetId = null;
-function openSheet(id){
-  closeSheet(true);
-  openSheetId = id;
-  $("#overlay").classList.remove("hidden");
-  requestAnimationFrame(() => $("#overlay").classList.add("show"));
-  const sh = $("#" + id);
-  sh.classList.remove("hidden");
-  requestAnimationFrame(() => requestAnimationFrame(() => sh.classList.add("open")));
-  sh.scrollTop = 0;
-}
-function closeSheet(instant){
-  if(!openSheetId) return;
-  const sh = $("#" + openSheetId);
-  sh.classList.remove("open");
-  $("#overlay").classList.remove("show");
-  const id = openSheetId; openSheetId = null;
-  setTimeout(() => {
-    $("#" + id).classList.add("hidden");
-    if(!openSheetId) $("#overlay").classList.add("hidden");
-  }, instant ? 0 : 420);
-}
-$("#overlay").addEventListener("click", () => closeSheet());
-document.addEventListener("keydown", e => {
-  if(e.key === "Escape"){
-    if(openSheetId) closeSheet();
-    else if(!$("#screen-detail").classList.contains("hidden")) closeDetail();
-  }
-});
-
-/* ---------------- Checkout ---------------- */
-$("#checkoutBtn").addEventListener("click", () => {
-  const t = cartTotals();
-  $("#ckItems").textContent = `${cartCount()} item${cartCount()===1?"":"s"}`;
-  $("#ckTotal").textContent = money(t.total);
-  $("#ckEarn").textContent = "+" + earnedPoints() + " pts";
-  $("#ckErr").classList.add("hidden");
-  openSheet("checkoutSheet");
-});
-function earnedPoints(){
-  const base = S.cart.reduce((n,l) => n + prod(l.id).points * l.qty, 0);
-  const mult = ["Gold","Platinum"].includes(levelFor(S.points).name) ? 1.5 : 1;
-  return Math.round(base * mult);
-}
-$("#placeOrder").addEventListener("click", () => {
-  const fields = [
-    ["ckName", v => v.length >= 2, "Please enter your full name."],
-    ["ckPhone", v => /^[+0-9 ()-]{7,}$/.test(v), "Please enter a valid phone number."],
-    ["ckEmail", v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "Please enter a valid email address."],
-    ["ckAddress", v => v.length >= 4, "Please enter your delivery address."],
-    ["ckCity", v => v.length >= 2, "Please enter your city."],
-  ];
-  let err = null;
-  for(const [id, ok, msg] of fields){
-    const el = $("#" + id), good = ok(el.value.trim());
-    el.classList.toggle("bad", !good);
-    if(!good && !err) err = msg;
-  }
-  if(err){
-    const e = $("#ckErr"); e.textContent = err; e.classList.remove("hidden");
+async function installApp(){
+  if(isStandalone()){toast('Ridwaan Store is already installed');return}
+  if(installPromptEvent){
+    const prompt=installPromptEvent;prompt.prompt();const choice=await prompt.userChoice;installPromptEvent=null;
+    if(choice.outcome==='accepted')toast('Installing Ridwaan Store…');else toast('Installation cancelled','!');
     return;
   }
-  const t = cartTotals();
-  const earn = earnedPoints();
-  const orderNo = "RMS-" + Math.floor(100000 + Math.random() * 900000);
-  const name = $("#ckName").value.trim();
-  const pay = $('input[name="pay"]:checked').value;
-  const date = new Date().toLocaleDateString("en-US", {month:"short", day:"numeric"});
-
-  if(S.usePoints && S.points >= POINTS_REDEEM){
-    S.points -= POINTS_REDEEM;
-    S.activity.unshift({name:"Redeemed at checkout", pts:-POINTS_REDEEM, date});
+  openSheet(`<div class="sheet-head"><h2>Install Mobile App</h2><button class="icon-btn close" onclick="closeSheet()" aria-label="Close">${icon('x')}</button></div><div class="install-guide"><div class="install-app-mark">R</div><h3>Ridwaan Mobile Store</h3><p>Install the store on your phone for a full-screen app experience and offline access.</p><ol><li><b>Samsung Internet:</b> tap the menu ☰, then <b>Add page to</b> → <b>Home screen</b>.</li><li><b>Google Chrome:</b> tap ⋮, then <b>Install app</b> or <b>Add to Home screen</b>.</li><li><b>iPhone Safari:</b> tap Share, then <b>Add to Home Screen</b>.</li></ol></div><button class="primary-btn" onclick="closeSheet()">Got it</button>`);
+}
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}).replace(/^0/,'')}
+function renderSkeleton(){
+  app.innerHTML=`<div class="greeting-row"><div><div class="skeleton" style="width:82px;height:10px;border-radius:5px"></div><div class="skeleton" style="width:150px;height:25px;border-radius:8px;margin-top:8px"></div></div><div class="skeleton" style="width:42px;height:42px;border-radius:50%"></div></div><div class="skeleton skeleton-hero"></div><div class="brand-strip">${Array(5).fill('<i class="skeleton" style="width:70px;height:35px;border-radius:20px;flex:0 0 auto"></i>').join('')}</div><div class="product-grid"><div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div></div>`;
+}
+function renderNav(){
+  const user=currentUser();
+  if(!user){nav.hidden=true;nav.innerHTML='';return}
+  if(['admin','manager'].includes(user.role)){
+    const tabs=[['home','Dashboard','admin'],['shop','Products','admin-products'],['cart','Orders','admin-orders'],['user','Users','admin-users'],['sliders','Settings','admin-settings']];
+    nav.hidden=false;
+    nav.innerHTML=tabs.map(([ic,label,p])=>`<button class="nav-item ${state.page===p?'active':''}" onclick="setPage('${p}')" aria-label="${label}">${icon(ic)}<span>${label}</span></button>`).join('');
+    return;
   }
-  S.points += earn;
-  S.activity.unshift({name:"Order #" + orderNo, pts:+earn, date});
-  S.orders.unshift({
-    no: orderNo, name, pay, total: t.total, date,
-    items: S.cart.map(l => ({ name: prod(l.id).name, qty: l.qty, storage: l.storage })),
-  });
-  S.cart = []; S.promo = null; S.usePoints = false;
-  save();
-  updateCartBadge(); renderCart(); updateMiniRewards();
-
-  $("#okName").textContent = `Thank you, ${name}! Your order is confirmed.`;
-  $("#okNumber").textContent = "Order #" + orderNo;
-  $("#okTotal").textContent = money(t.total);
-  $("#okPoints").textContent = "+" + earn + " pts";
-  openSheet("successSheet");
-  confettiBurst();
-  ["ckName","ckPhone","ckEmail","ckAddress","ckCity"].forEach(id => $("#"+id).classList.remove("bad"));
-});
-$("#okDone").addEventListener("click", () => { closeSheet(); showTab("shop"); });
-
-/* ---------------- Rewards ---------------- */
-const RING_LEN = 2 * Math.PI * 52; // matches r=52 in the SVG
-
-function renderRewards(animate){
-  const lvl = levelFor(S.points);
-  const next = LEVELS[LEVELS.indexOf(lvl) + 1];
-  const spanMax = next ? lvl.max + 1 : S.points || 1;
-  const frac = next ? Math.min(1, (S.points - lvl.min) / (spanMax - lvl.min)) : 1;
-
-  // Animated points counter
-  const ptsEl = $("#ringPts");
-  const from = animate ? 0 : S.points, to = S.points, t0 = performance.now();
-  (function tick(now){
-    const k = Math.min(1, (now - t0) / 900);
-    ptsEl.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3))).toLocaleString();
-    if(k < 1) requestAnimationFrame(tick);
-  })(t0);
-
-  // Animated ring
-  const fg = $("#ringFg");
-  fg.style.strokeDasharray = RING_LEN;
-  fg.style.strokeDashoffset = RING_LEN;
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    fg.style.strokeDashoffset = RING_LEN * (1 - frac);
-  }));
-
-  $("#ringProgress").textContent = next
-    ? `${(next.min - S.points).toLocaleString()} points to ${next.name} · you're ${lvl.name}`
-    : `You've reached ${lvl.name} — the top tier ✨`;
-
-  // Level cards
-  $("#levelList").innerHTML = LEVELS.map((L,i) => {
-    const isCur = L === lvl;
-    const rangeTxt = L.max === Infinity ? `${L.min.toLocaleString()}+ pts` : `${L.min.toLocaleString()}–${L.max.toLocaleString()} pts`;
-    return `<button class="level ${isCur?"current":""}" data-level="${L.name}" style="animation-delay:${i*60}ms">
-      <div class="lv-top">
-        <span class="lv-ic">${L.icon}</span>
-        <span><span class="lv-name">${L.name}</span><br><span class="lv-range">${rangeTxt} · ${L.perks}</span></span>
-        ${isCur ? '<span class="lv-tag">Your level</span>' : ""}
-      </div>
-      <div class="bar"><i data-bar style="width:0"></i></div>
-    </button>`;
-  }).join("");
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    $$("#levelList [data-bar]").forEach((b,i) => {
-      const L = LEVELS[i];
-      const done = S.points > L.max ? 1 : S.points < L.min ? 0 : (S.points - L.min) / ((L.max === Infinity ? Math.max(S.points, L.min+1) : L.max) - L.min);
-      b.style.width = Math.round(done * 100) + "%";
-    });
-  }));
-
-  // Benefits for current level
-  const perks = {
-    Bronze:["🏷️ Member-only prices","✨ Earn points on every order"],
-    Silver:["🏷️ Member-only prices","🚚 Free delivery over $500","✨ Earn points on every order"],
-    Gold:["🚚 Free delivery on every order","💰 1.5× points on all purchases","🎂 Birthday bonus of 200 points","⚡ Priority support"],
-    Platinum:["🚚 Free express delivery","💰 2× points on all purchases","🛎️ VIP support line","🚀 Early access to new phones"],
-  }[lvl.name];
-  $("#benefitList").innerHTML = perks.map(p => `<li>${p}</li>`).join("");
-
-  // Activity
-  $("#activityList").innerHTML = S.activity.slice(0,6).map(a => `
-    <div class="act">
-      <span class="act-ic">${a.pts >= 0 ? "🛍️" : "🎁"}</span>
-      <span class="act-info"><span class="act-name">${esc(a.name)}</span><br><span class="act-date">${esc(a.date)}</span></span>
-      <span class="act-pts ${a.pts >= 0 ? "plus" : "minus"}">${a.pts >= 0 ? "+" : ""}${a.pts}</span>
-    </div>`).join("");
-
-  updateMiniRewards();
-
-  // First-time Gold celebration
-  if(!S.goldSeen && (lvl.name === "Gold" || lvl.name === "Platinum")){
-    S.goldSeen = true; save();
-    setTimeout(showGoldSheet, 800);
-  }
+  const tabs=[['home','Home'],['shop','Shop'],['cart','Cart'],['gift','Rewards'],['user','Profile']];
+  const pageMap={gift:'rewards',user:'profile'};
+  const count=state.cart.reduce((s,i)=>s+i.qty,0);
+  nav.innerHTML=tabs.map(([ic,label])=>{const p=pageMap[ic]||ic;return `<button class="nav-item ${state.page===p?'active':''}" onclick="setPage('${p}')" aria-label="${label}">${icon(ic)}<span>${label}</span>${p==='cart'&&count?`<b class="nav-badge">${count}</b>`:''}</button>`}).join('');
 }
-function showGoldSheet(){ openSheet("goldSheet"); confettiBurst(true); }
-$("#goldView").addEventListener("click", () => { closeSheet(); showTab("rewards"); });
-
-document.addEventListener("click", e => {
-  const lv = e.target.closest("[data-level]");
-  if(lv && lv.dataset.level === levelFor(S.points).name && ["Gold","Platinum"].includes(lv.dataset.level)){
-    showGoldSheet();
-  } else if(lv){
-    toast(`${lv.dataset.level}: ${LEVELS.find(x => x.name === lv.dataset.level).perks}`);
-  }
-});
-$("#raPurchases").addEventListener("click", () => openListSheet("Purchases", ordersListHTML()));
-$("#raPoints").addEventListener("click", () => openListSheet("Points activity",
-  S.activity.map(a => `<div class="act"><span class="act-ic">${a.pts>=0?"🛍️":"🎁"}</span>
-   <span class="act-info"><span class="act-name">${esc(a.name)}</span><br><span class="act-date">${esc(a.date)}</span></span>
-   <span class="act-pts ${a.pts>=0?"plus":"minus"}">${a.pts>=0?"+":""}${a.pts}</span></div>`).join("")));
-$("#raLevel").addEventListener("click", () => {
-  const lvl = levelFor(S.points);
-  if(["Gold","Platinum"].includes(lvl.name)) showGoldSheet();
-  else toast(`Keep shopping — ${(LEVELS[LEVELS.indexOf(lvl)+1].min - S.points)} pts to ${LEVELS[LEVELS.indexOf(lvl)+1].name}!`);
-});
-$("#raRedeem").addEventListener("click", () => {
-  toast(`Apply ${POINTS_REDEEM} pts (${money(POINTS_REDEEM*POINT_VALUE)}) in your cart at checkout`);
-  showTab("cart");
-});
-
-/* ---------------- Profile ---------------- */
-function renderProfileMeta(){
-  $("#orderCount").textContent = S.orders.length ? `${S.orders.length} order${S.orders.length===1?"":"s"}` : "None yet";
-  $("#wishCount").textContent = S.wishlist.length ? `${S.wishlist.length} saved` : "Empty";
-  $("#tgNotif").checked = S.prefs.notif;
-  $("#tgBio").checked = S.prefs.bio;
-  $("#tgDark").checked = S.prefs.dark;
-  $("#langSel").value = S.prefs.lang;
+function setPage(page){
+  const user=currentUser();
+  if(!user){state.session=null;save();renderAuth('signin');return}
+  const adminPages=['admin','admin-products','admin-orders','admin-users','admin-settings'];
+  if(['admin','manager'].includes(user.role)&&!adminPages.includes(page)) page='admin';
+  if(!['admin','manager'].includes(user.role)&&adminPages.includes(page)) page='home';
+  state.page=page; selected=null; app.className='app-view'; nav.hidden=false; renderNav();
+  ({home:renderHome,shop:renderShop,cart:renderCart,rewards:renderRewards,profile:renderProfile,admin:renderAdminDashboard,'admin-products':renderAdminProducts,'admin-orders':renderAdminOrders,'admin-users':renderAdminUsers,'admin-settings':renderAdminSettings}[page]||(isAdmin()?renderAdminDashboard:renderHome))();
+  app.scrollTop=0; window.scrollTo({top:0,behavior:'smooth'});
 }
-function ordersListHTML(){
-  return S.orders.length
-    ? S.orders.map(o => `<div class="act"><span class="act-ic">📦</span>
-       <span class="act-info"><span class="act-name">#${esc(o.no)} · ${esc(o.pay)}</span><br>
-       <span class="act-date">${esc(o.date)} · ${o.items.map(i => `${i.qty}× ${esc(i.name)}`).join(", ")}</span></span>
-       <span class="act-pts">${money(o.total)}</span></div>`).join("")
-    : `<p class="ok-line">No orders yet — your purchases will appear here.</p>`;
-}
-function wishlistHTML(){
-  return S.wishlist.length
-    ? S.wishlist.map(id => { const p = prod(id); return `<div class="act" data-open="${p.id}" role="button" tabindex="0">
-        <span class="act-ic">🤍</span>
-        <span class="act-info"><span class="act-name">${esc(p.name)}</span><br><span class="act-date">${esc(p.brand)}</span></span>
-        <span class="act-pts">${money(p.price)}</span></div>`; }).join("")
-    : `<p class="ok-line">Your wishlist is empty. Tap ♡ on any phone to save it.</p>`;
-}
-function openListSheet(title, html){
-  $("#listTitle").textContent = title;
-  $("#listBody").innerHTML = html;
-  openSheet("listSheet");
-}
-$("#miOrders").addEventListener("click", () => openListSheet("Order history", ordersListHTML()));
-$("#miWishlist").addEventListener("click", () => openListSheet("Wishlist", wishlistHTML()));
-$("#listBody").addEventListener("click", e => {
-  const o = e.target.closest("[data-open]");
-  if(o){ closeSheet(); openDetail(o.dataset.open); }
-});
-$("#miAddress").addEventListener("click", () => openListSheet("Saved addresses",
-  `<div class="act"><span class="act-ic">🏠</span><span class="act-info"><span class="act-name">Home</span><br><span class="act-date">Jigjiga Yar, Hargeisa, Somaliland</span></span></div>
-   <div class="act"><span class="act-ic">🏢</span><span class="act-info"><span class="act-name">Work</span><br><span class="act-date">Road No 1, Hargeisa</span></span></div>`));
-$("#miPayments").addEventListener("click", () => openListSheet("Payment methods",
-  `<div class="act"><span class="act-ic">📱</span><span class="act-info"><span class="act-name">Zaad</span><br><span class="act-date">Default · +252 63 •••• 512</span></span></div>
-   <div class="act"><span class="act-ic">📲</span><span class="act-info"><span class="act-name">eDahab</span><br><span class="act-date">+252 65 •••• 907</span></span></div>
-   <div class="act"><span class="act-ic">💵</span><span class="act-info"><span class="act-name">Cash on Delivery</span><br><span class="act-date">Available in Hargeisa</span></span></div>`));
-$("#miHelp").addEventListener("click", () => openListSheet("Help & support",
-  `<p class="ok-line">This is a front-end demo store. For questions, email <strong>support@ridwaanstore.demo</strong>.</p>
-   <div class="act"><span class="act-ic">💬</span><span class="act-info"><span class="act-name">Chat with us</span><br><span class="act-date">Every day, 8am–8pm</span></span></div>
-   <div class="act"><span class="act-ic">🔁</span><span class="act-info"><span class="act-name">Returns</span><br><span class="act-date">14-day free returns</span></span></div>`));
-$("#editProfile").addEventListener("click", () => toast("Profile editing is a demo placeholder"));
-$("#logoutBtn").addEventListener("click", () => toast("Logged out (demo) — see you soon 👋"));
-
-$("#tgNotif").addEventListener("change", e => { S.prefs.notif = e.target.checked; save();
-  toast(e.target.checked ? "Notifications on" : "Notifications off"); });
-$("#tgBio").addEventListener("change", e => { S.prefs.bio = e.target.checked; save();
-  toast(e.target.checked ? "Biometric lock on 🔒" : "Biometric lock off"); });
-$("#tgDark").addEventListener("change", e => { setDark(e.target.checked); });
-$("#langSel").addEventListener("change", e => { S.prefs.lang = e.target.value; save();
-  toast({en:"Language: English", so:"Luuqadda: Soomaali", ar:"اللغة: العربية"}[e.target.value]); });
-
-function setDark(on){
-  S.prefs.dark = on; save();
-  document.documentElement.style.setProperty("color-scheme", on ? "dark" : "light");
-  document.documentElement.dataset.theme = on ? "dark" : "";
-  if(!on) delete document.documentElement.dataset.theme;
+function header(title,action=''){return `<header class="page-head"><div><p class="eyebrow">Ridwaan Mobile Store</p><h1>${title}</h1></div>${action||`<div class="page-head-spacer"></div>`}</header>`}
+function imageMarkup(p,cls='product-media'){return `<div class="${cls}"><img src="${p.image}" alt="${safe(p.name)}" loading="lazy" onerror="imageFallback(this)"></div>`}
+function imageFallback(img){img.parentElement.classList.add('fallback');img.removeAttribute('src')}
+function stars(p){return `<span class="rating">${icon('star')} ${p.rating} <span>(${p.reviews})</span></span>`}
+function productCard(p){
+  const wished=state.wishlist.includes(p.id);
+  return `<article class="product-card"><div class="product-media" onclick="showProduct(${p.id})" role="button" tabindex="0" onkeydown="if(event.key==='Enter')showProduct(${p.id})"><span class="discount-badge">-${p.discount}%</span><button class="wish-btn ${wished?'active':''}" onclick="event.stopPropagation();toggleWishlist(${p.id})" aria-label="${wished?'Remove from':'Add to'} wishlist">${icon('heart')}</button><img src="${p.image}" alt="${safe(p.name)}" loading="lazy" onerror="imageFallback(this)"></div><div class="product-info" onclick="showProduct(${p.id})"><span class="brand">${p.brand}</span><h3 class="product-name">${p.name}</h3>${stars(p)}<div class="price-row"><strong class="price">${money(p.price)}</strong><del class="old-price">${money(p.oldPrice)}</del><button class="add-btn" onclick="event.stopPropagation();quickAdd(${p.id})" aria-label="Add ${safe(p.name)} to cart">${icon('plus')}</button></div></div></article>`;
 }
 
-/* ---------------- Confetti ---------------- */
-function confettiBurst(golden){
-  const cv = $("#confetti"), ctx = cv.getContext("2d");
-  const rect = cv.parentElement.getBoundingClientRect();
-  cv.width = rect.width; cv.height = rect.height;
-  const colors = golden ? ["#F3C05C","#DD9A2B","#FFE9B8","#C6531B"] : ["#C6531B","#E2A63D","#2E7D4F","#FFFCF7","#D96A2B"];
-  const bits = Array.from({length:90}, () => ({
-    x: cv.width/2 + (Math.random()-.5)*120, y: cv.height*0.42,
-    vx: (Math.random()-.5)*9, vy: -(4+Math.random()*8),
-    s: 4+Math.random()*5, r: Math.random()*Math.PI, vr:(Math.random()-.5)*.3,
-    c: colors[Math.floor(Math.random()*colors.length)],
-  }));
-  let frames = 0;
-  (function anim(){
-    ctx.clearRect(0,0,cv.width,cv.height);
-    bits.forEach(b => {
-      b.vy += .25; b.x += b.vx; b.y += b.vy; b.r += b.vr;
-      ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(b.r);
-      ctx.fillStyle = b.c; ctx.fillRect(-b.s/2,-b.s/2,b.s,b.s*.6); ctx.restore();
-    });
-    if(++frames < 130) requestAnimationFrame(anim);
-    else ctx.clearRect(0,0,cv.width,cv.height);
-  })();
+function renderAuth(mode='signin'){
+  state.page='auth';nav.hidden=true;nav.innerHTML='';app.className='app-view auth-view';
+  const signUp=mode==='signup';
+  app.innerHTML=`<section class="auth-page"><div class="auth-orbs"><i></i><i></i><i></i></div><div class="auth-brand"><span class="auth-logo">R</span><div><b>Ridwaan</b><small>Mobile Store</small></div></div><div class="auth-copy"><span class="auth-kicker">${signUp?'JOIN THE STORE':'WELCOME BACK'}</span><h1>${signUp?'Create your account':'Sign in to continue'}</h1><p>${signUp?'Register once, then shop phones, track orders and earn rewards.':'Access your shopping, rewards and order history.'}</p></div><form class="auth-form" onsubmit="${signUp?'submitSignUp(event)':'submitSignIn(event)'}">${signUp?`<label class="auth-field"><span>Full name</span><div>${icon('user')}<input name="name" autocomplete="name" placeholder="Your full name" required></div></label><label class="auth-field"><span>Phone number</span><div>${icon('cart')}<input name="phone" type="tel" autocomplete="tel" placeholder="+252..." required></div></label>`:''}<label class="auth-field"><span>Email address</span><div>${icon('user')}<input name="email" type="email" autocomplete="email" placeholder="name@example.com" required></div></label><label class="auth-field"><span>Password</span><div>${icon('user')}<input id="authPassword" name="password" type="password" autocomplete="${signUp?'new-password':'current-password'}" placeholder="Minimum 8 characters" minlength="8" required><button type="button" class="password-toggle" onclick="togglePassword('authPassword',this)" aria-label="Show password">◉</button></div></label>${signUp?`<label class="auth-field"><span>Confirm password</span><div>${icon('check')}<input id="confirmPassword" name="confirm" type="password" autocomplete="new-password" placeholder="Repeat password" minlength="8" required></div></label><label class="auth-consent"><input name="terms" type="checkbox" required> I agree to the demo store terms and privacy notice.</label>`:`<div class="auth-options"><label><input name="remember" type="checkbox" checked> Remember me</label><button type="button" onclick="openForgotPassword()">Forgot password?</button></div>`}<p class="auth-error" id="authError"></p><button class="primary-btn auth-submit" type="submit">${signUp?'Create Account':'Sign In'} ${icon('arrow')}</button></form>${!signUp?`<div class="auth-divider"><span>New customer?</span></div><button type="button" class="signup-cta" onclick="renderAuth('signup')">${icon('user')}<span><b>Sign Up</b><small>Create your shopping account</small></span>${icon('arrow')}</button>`:`<p class="auth-switch">Already have an account? <button onclick="renderAuth('signin')">Sign In</button></p>`}${!signUp?`<button class="admin-demo-link" onclick="fillAdminLogin()">Use admin demo account</button><p class="demo-credentials">Admin: admin@ridwaanstore.com · Admin123!<br>Customer: demo@ridwaanstore.com · Demo123!</p>`:''}</section>`;
+  app.scrollTop=0;
 }
+function togglePassword(id,button){const input=document.getElementById(id);input.type=input.type==='password'?'text':'password';button.textContent=input.type==='password'?'◉':'◎';button.setAttribute('aria-label',input.type==='password'?'Show password':'Hide password')}
+function submitSignIn(e){
+  e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const email=data.email.trim().toLowerCase();const user=state.users.find(u=>u.email.toLowerCase()===email);
+  if(!user||user.passwordHash!==hashText(data.password)){document.getElementById('authError').textContent='Email or password is incorrect.';return}
+  if(user.status!=='active'){document.getElementById('authError').textContent='This account is suspended. Contact the administrator.';return}
+  startSession(user);toast(`Welcome back, ${user.name.split(' ')[0]}`);
+}
+function submitSignUp(e){
+  e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const email=data.email.trim().toLowerCase();
+  if(data.password!==data.confirm){document.getElementById('authError').textContent='Passwords do not match.';return}
+  if(state.users.some(u=>u.email.toLowerCase()===email)){document.getElementById('authError').textContent='An account with this email already exists.';return}
+  const user={id:`usr_${Date.now()}`,name:data.name.trim(),email,phone:data.phone.trim(),passwordHash:hashText(data.password),role:'customer',status:'active',createdAt:new Date().toISOString()};state.users.push(user);startSession(user);toast('Account created successfully');
+}
+function startSession(user){state.session={userId:user.id,signedInAt:new Date().toISOString()};state.profile={...state.profile,name:user.name,email:user.email,phone:user.phone||state.profile.phone};save();setPage(['admin','manager'].includes(user.role)?'admin':'home')}
+function fillAdminLogin(){const form=app.querySelector('.auth-form');form.elements.email.value='admin@ridwaanstore.com';form.elements.password.value='Admin123!';toast('Admin details filled — tap Sign In')}
+function openForgotPassword(){openSheet(`<form onsubmit="resetPassword(event)"><div class="sheet-head"><h2>Reset password</h2><button type="button" class="icon-btn close" onclick="closeSheet()" aria-label="Close">${icon('x')}</button></div><p class="sheet-note">Enter your registered email and choose a new demo password.</p><div class="form-grid"><label class="field full"><span>Email</span><input name="email" type="email" required></label><label class="field full"><span>New password</span><input name="password" type="password" minlength="8" required></label></div><p class="error-text" id="resetError"></p><button class="primary-btn" type="submit">Update Password</button></form>`)}
+function resetPassword(e){e.preventDefault();const data=Object.fromEntries(new FormData(e.target));const user=state.users.find(u=>u.email.toLowerCase()===data.email.trim().toLowerCase());if(!user){document.getElementById('resetError').textContent='No account was found with that email.';return}user.passwordHash=hashText(data.password);save();closeSheet();toast('Password updated — you can sign in now')}
+function signOut(){state.session=null;state.cart=[];state.promo='';state.usePoints=false;save();closeSheet();renderAuth('signin');toast('You have signed out')}
 
-/* ---------------- Boot with skeletons ---------------- */
-function bootSkeletons(){
-  $("#popularRow").innerHTML = $("#offersRow").innerHTML =
-    Array.from({length:3}, () => `<div class="p-card sk sk-box" style="width:168px;flex:none"></div>`).join("");
-  $("#heroArt").innerHTML = "";
+function renderHome(){
+  app.innerHTML=`<header class="greeting-row"><div><p class="eyebrow">Welcome back</p><h1>Hello, ${safe(state.profile.name.split(' ')[0])} 👋</h1></div><div class="head-actions"><button class="icon-btn" onclick="showNotifications()" aria-label="Notifications">${icon('bell')}<i class="notification-dot"></i></button><button class="avatar" onclick="setPage('profile')" aria-label="Open profile">R</button></div></header>
+  <div class="search-row"><label class="search-box">${icon('search')}<input id="homeSearch" placeholder="Search phones, brands..." aria-label="Search phones" onkeydown="homeSearchKey(event)"></label><button class="filter-btn" onclick="setPage('shop');setTimeout(openFilters,10)" aria-label="Open filters">${icon('sliders')}</button></div>
+  <section class="hero"><div class="hero-copy"><span class="tag">New arrival</span><h2>Power meets premium.</h2><p>Meet the iPhone 16 Pro Max and earn 240 points.</p><button class="light-btn" onclick="showProduct(1)">Shop Now ${icon('arrow')}</button></div><div class="hero-phone"></div></section>
+  <div class="brand-strip">${['All','Apple','Samsung','Google','Xiaomi','OnePlus'].map((b,i)=>`<button class="chip ${i===0?'active':''}" onclick="goBrand('${b}')">${b}</button>`).join('')}</div>
+  <div class="section-head"><h2>Popular Phones</h2><button class="text-btn" onclick="setPage('shop')">See all</button></div><div class="h-scroll">${PRODUCTS.slice(0,6).map(productCard).join('')}</div>
+  <div class="section-head"><h2>Special Offers</h2><button class="text-btn" onclick="goDeals()">View deals</button></div><div class="offer-row"><button class="offer-card" onclick="showProduct(3)"><span>Flagship deal</span><b>Save on Galaxy Ultra</b><i class="offer-icon">📱</i></button><button class="offer-card" onclick="goDeals()"><span>This week</span><b>Up to 18% off</b><i class="offer-icon">✨</i></button></div>
+  <button class="rewards-mini" onclick="setPage('rewards')"><span class="coin">★</span><span><b>${state.points.toLocaleString()} Reward Points</b><p>Gold member · ${Math.max(0,3000-state.points).toLocaleString()} to Platinum</p></span><span class="icon-btn">${icon('chevron')}</span></button>`;
 }
-function init(){
-  if(S.prefs.dark) setDark(true);
-  bootSkeletons();
-  updateCartBadge();
-  updateMiniRewards();
-  setTimeout(() => { renderHome(); }, 520);   // brief skeleton shimmer on first paint
-  renderShop();
-  renderProfileMeta();
+function homeSearchKey(e){if(e.key==='Enter'){shop.query=e.target.value.trim();setPage('shop')}}
+function goBrand(brand){shop.brand=brand;setPage('shop')}
+function goDeals(){shop.sort='discount';setPage('shop')}
+function showNotifications(){openSheet(`<div class="sheet-head"><h2>Notifications</h2><button class="icon-btn close" onclick="closeSheet()" aria-label="Close">${icon('x')}</button></div><div class="activity-list"><div class="activity"><span class="activity-icon">🔥</span><span><b>Weekend offer is live</b><span>Save up to 18% on selected phones.</span></span></div><div class="activity"><span class="activity-icon">⭐</span><span><b>You’re a Gold member</b><span>Enjoy free delivery and 2× points.</span></span></div><div class="activity"><span class="activity-icon">📦</span><span><b>Fast delivery</b><span>Same-day delivery is available in Hargeisa.</span></span></div></div>`) }
+
+function filteredProducts(){
+  let list=PRODUCTS.filter(p=>(shop.brand==='All'||p.brand===shop.brand)&&(shop.availability==='all'||(shop.availability==='in'&&p.stock)||(shop.availability==='out'&&!p.stock))&&p.price<=shop.maxPrice&&(p.name+' '+p.brand).toLowerCase().includes(shop.query.toLowerCase()));
+  if(shop.sort==='low')list.sort((a,b)=>a.price-b.price);if(shop.sort==='high')list.sort((a,b)=>b.price-a.price);if(shop.sort==='rating')list.sort((a,b)=>b.rating-a.rating);if(shop.sort==='discount')list.sort((a,b)=>b.discount-a.discount);
+  return list;
 }
-document.addEventListener("DOMContentLoaded", init);
+function renderShop(){
+  const list=filteredProducts();
+  app.innerHTML=`${header('Shop',`<button class="icon-btn" onclick="openFilters()" aria-label="Filter products">${icon('sliders')}</button>`)}<div class="shop-tools"><label class="search-box">${icon('search')}<input value="${safe(shop.query)}" placeholder="Search product or brand" aria-label="Search products" oninput="shop.query=this.value;renderShop()"></label><div class="brand-strip">${['All','Apple','Samsung','Google','Xiaomi','OnePlus','Nothing','Motorola','Honor'].map(b=>`<button class="chip ${shop.brand===b?'active':''}" onclick="shop.brand='${b}';renderShop()">${b}</button>`).join('')}</div></div><div class="filter-summary"><span>${list.length} phone${list.length===1?'':'s'} found</span><label><span class="sr-only">Sort</span><select class="sort-select" onchange="shop.sort=this.value;renderShop()"><option value="featured" ${shop.sort==='featured'?'selected':''}>Featured</option><option value="low" ${shop.sort==='low'?'selected':''}>Price: Low to High</option><option value="high" ${shop.sort==='high'?'selected':''}>Price: High to Low</option><option value="rating" ${shop.sort==='rating'?'selected':''}>Top Rated</option><option value="discount" ${shop.sort==='discount'?'selected':''}>Biggest Discount</option></select></label></div>${list.length?`<div class="product-grid">${list.map(productCard).join('')}</div>`:`<div class="empty-state"><div class="empty-illustration">🔎</div><h2>No phones found</h2><p>Try changing your search or filters.</p><button class="primary-btn" onclick="clearFilters()">Clear Filters</button></div>`}`;
+}
+function openFilters(){
+  openSheet(`<div class="sheet-head"><h2>Filter products</h2><button class="icon-btn close" onclick="closeSheet()" aria-label="Close filters">${icon('x')}</button></div><div class="filter-group"><label>Maximum price: <strong id="rangeValue">${money(shop.maxPrice)}</strong></label><div class="range-line"><span>$300</span><input id="priceRange" type="range" min="300" max="1500" step="50" value="${shop.maxPrice}" oninput="document.getElementById('rangeValue').textContent=money(this.value)"><span>$1,500</span></div></div><div class="filter-group"><label>Availability</label><div class="filter-checks"><button class="check-chip ${shop.availability==='all'?'active':''}" data-avail="all" onclick="sheetAvailability(this)">All</button><button class="check-chip ${shop.availability==='in'?'active':''}" data-avail="in" onclick="sheetAvailability(this)">In stock</button><button class="check-chip ${shop.availability==='out'?'active':''}" data-avail="out" onclick="sheetAvailability(this)">Out of stock</button></div></div><div class="filter-group"><label>Brand</label><div class="filter-checks">${['All','Apple','Samsung','Google','Xiaomi','OnePlus','Nothing','Motorola','Honor'].map(b=>`<button class="check-chip ${shop.brand===b?'active':''}" data-brand="${b}" onclick="sheetBrand(this)">${b}</button>`).join('')}</div></div><div class="sheet-actions"><button class="secondary-btn" onclick="clearFilters();closeSheet()">Clear</button><button class="primary-btn" onclick="applyFilters()">Show products</button></div>`);
+}
+function sheetAvailability(el){el.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));el.classList.add('active')}
+function sheetBrand(el){el.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active'));el.classList.add('active')}
+function applyFilters(){shop.maxPrice=Number(document.getElementById('priceRange').value);shop.availability=modalRoot.querySelector('[data-avail].active').dataset.avail;shop.brand=modalRoot.querySelector('[data-brand].active').dataset.brand;closeSheet();renderShop()}
+function clearFilters(){shop={query:'',brand:'All',maxPrice:1500,availability:'all',sort:'featured'};if(state.page==='shop')renderShop()}
+
+function showProduct(id){
+  closeSheet();
+  const p=product(id); selected=p;detailChoice={storage:p.storage[0],color:p.colors[0][0],qty:1};
+  state.page='details';nav.hidden=true;app.className='app-view details-open';renderDetails();window.scrollTo(0,0);
+}
+function renderDetails(){
+  const p=selected,wished=state.wishlist.includes(p.id);
+  app.innerHTML=`<article class="details-page"><div class="detail-top"><button class="icon-btn" onclick="setPage('shop')" aria-label="Back to shop">${icon('back')}</button><button class="icon-btn wish-btn ${wished?'active':''}" onclick="toggleWishlist(${p.id});renderDetails()" aria-label="Toggle wishlist">${icon('heart')}</button></div><div class="detail-image"><img src="${p.image}" alt="${safe(p.name)}" onerror="imageFallback(this)"><span class="carousel-dots"><i class="active"></i><i></i><i></i></span></div><div class="detail-body"><span class="brand">${p.brand}</span><h1>${p.name}</h1><div class="detail-rating">${icon('star')} <strong>${p.rating}</strong> · ${p.reviews} verified reviews</div><div class="detail-price">${money(p.price)} <del>${money(p.oldPrice)}</del></div><p class="detail-desc">${p.description}</p><div class="option-block"><div class="option-label"><span>Choose color</span><span id="colorName">${detailChoice.color}</span></div><div class="choices">${p.colors.map(([n,c])=>`<button class="color-choice ${detailChoice.color===n?'active':''}" style="background:${c}" onclick="detailChoice.color='${n}';renderDetails()" aria-label="${n}" title="${n}"></button>`).join('')}</div></div><div class="option-block"><div class="option-label"><span>Storage</span><span>${detailChoice.storage}</span></div><div class="choices">${p.storage.map(s=>`<button class="storage-choice ${detailChoice.storage===s?'active':''}" onclick="detailChoice.storage='${s}';renderDetails()">${s}</button>`).join('')}</div></div><div class="stock-row"><span class="${p.stock?'stock':''}">${p.stock?'● In stock':'Out of stock'}</span><div class="qty-control"><button onclick="detailQty(-1)" aria-label="Decrease quantity">${icon('minus')}</button><b>${detailChoice.qty}</b><button onclick="detailQty(1)" aria-label="Increase quantity">${icon('plus')}</button></div></div><div class="rewards-mini"><span class="coin">★</span><span><b>Earn ${p.points*detailChoice.qty} points</b><p>Added after your order is completed</p></span></div></div></article><div class="sticky-add"><button class="primary-btn" ${p.stock?'':'disabled'} onclick="addDetailedToCart()">${icon('cart')} ${p.stock?'Add to Cart · '+money(p.price*detailChoice.qty):'Currently unavailable'}</button></div>`;
+}
+function detailQty(d){detailChoice.qty=Math.max(1,Math.min(9,detailChoice.qty+d));renderDetails()}
+function addDetailedToCart(){addToCart(selected.id,detailChoice.storage,detailChoice.color,detailChoice.qty);toast(`${selected.name} added to cart`);setPage('cart')}
+function quickAdd(id){const p=product(id);if(!p.stock)return toast('This phone is currently out of stock','!');addToCart(id,p.storage[0],p.colors[0][0],1);toast('Added to your cart')}
+function addToCart(id,storage,color,qty){const key=`${id}-${storage}-${color}`;const found=state.cart.find(i=>i.key===key);found?found.qty+=qty:state.cart.push({key,id,storage,color,qty});save();renderNav();const badge=nav.querySelector('.nav-badge');if(badge)badge.classList.add('bump')}
+function toggleWishlist(id){const i=state.wishlist.indexOf(id);i>=0?state.wishlist.splice(i,1):state.wishlist.push(id);save();toast(i>=0?'Removed from wishlist':'Saved to wishlist');if(state.page==='shop')renderShop();else if(state.page==='home')renderHome()}
+
+function cartTotals(){
+  const subtotal=state.cart.reduce((sum,i)=>sum+product(i.id).price*i.qty,0);const delivery=subtotal===0?0:subtotal>=900?0:15;const discount=state.promo==='RIDWAAN10'?subtotal*.1:0;const pointsDiscount=state.usePoints?Math.min(state.points/100,subtotal*.2):0;return {subtotal,delivery,discount,pointsDiscount,total:Math.max(0,subtotal+delivery-discount-pointsDiscount)};
+}
+function renderCart(){
+  const t=cartTotals();
+  app.innerHTML=`${header('My Cart')} ${state.cart.length?`<div class="cart-list">${state.cart.map(i=>{const p=product(i.id);return `<article class="cart-item"><div class="cart-thumb"><img src="${p.image}" alt="${safe(p.name)}" onerror="imageFallback(this)"></div><div><h3>${p.name}</h3><div class="cart-meta">${i.storage} · ${safe(i.color)}</div><strong class="price">${money(p.price*i.qty)}</strong><div class="mini-qty"><button onclick="cartQty('${i.key}',-1)" aria-label="Decrease">−</button><b>${i.qty}</b><button onclick="cartQty('${i.key}',1)" aria-label="Increase">+</button></div></div><button class="remove-btn" onclick="removeCart('${i.key}')" aria-label="Remove ${safe(p.name)}">${icon('trash')}</button></article>`}).join('')}</div><div class="promo-box"><input id="promo" value="${state.promo}" placeholder="Promo code (try RIDWAAN10)" aria-label="Promo code"><button onclick="applyPromo()">Apply</button></div><label class="reward-use"><input type="checkbox" ${state.usePoints?'checked':''} onchange="state.usePoints=this.checked;save();renderCart()"> Use reward points (save up to 20%)</label><div class="summary-card"><div class="summary-row"><span>Subtotal</span><strong>${money(t.subtotal)}</strong></div><div class="summary-row"><span>Delivery</span><strong>${t.delivery?money(t.delivery):'Free'}</strong></div><div class="summary-row"><span>Promo discount</span><strong>−${money(t.discount)}</strong></div><div class="summary-row"><span>Points discount</span><strong>−${money(t.pointsDiscount)}</strong></div><div class="summary-row total"><span>Total</span><strong>${money(t.total)}</strong></div><button class="primary-btn" onclick="openCheckout()">Checkout ${icon('arrow')}</button></div>`:`<div class="empty-state"><div class="empty-illustration">🛍️</div><h2>Your cart is empty</h2><p>Find a phone you love and it will appear here.</p><button class="primary-btn" onclick="setPage('shop')">Start Shopping</button></div>`}`;
+}
+function cartQty(key,d){const item=state.cart.find(i=>i.key===key);if(!item)return;item.qty+=d;if(item.qty<=0)state.cart=state.cart.filter(i=>i.key!==key);save();renderNav();renderCart()}
+function removeCart(key){state.cart=state.cart.filter(i=>i.key!==key);save();renderNav();renderCart();toast('Item removed')}
+function applyPromo(){const code=document.getElementById('promo').value.trim().toUpperCase();if(code==='RIDWAAN10'){state.promo=code;save();renderCart();toast('10% discount applied')}else{state.promo='';save();renderCart();toast('Promo code is not valid','!')}}
+
+function openCheckout(){
+  const t=cartTotals(),earned=state.cart.reduce((s,i)=>s+product(i.id).points*i.qty,0);
+  openSheet(`<form id="checkoutForm" onsubmit="placeOrder(event)"><div class="sheet-head"><h2>Checkout</h2><button type="button" class="icon-btn close" onclick="closeSheet()" aria-label="Close checkout">${icon('x')}</button></div><div class="form-grid"><label class="field"><span>Full name *</span><input name="name" value="${safe(state.profile.name)}" autocomplete="name" required></label><label class="field"><span>Phone number *</span><input name="phone" value="${safe(state.profile.phone)}" type="tel" autocomplete="tel" placeholder="+252..." required></label><label class="field full"><span>Email *</span><input name="email" value="${safe(state.profile.email)}" type="email" autocomplete="email" required></label><label class="field full"><span>Delivery address *</span><textarea name="address" autocomplete="street-address" required>${safe(state.profile.address)}</textarea></label><label class="field full"><span>City *</span><input name="city" value="${safe(state.profile.city)}" required></label></div><div class="filter-group"><label>Payment method *</label><div class="payment-options">${['Cash on Delivery','Zaad','eDahab','Credit/Debit Card'].map((p,i)=>`<button type="button" class="payment-option ${i===0?'selected':''}" data-payment="${p}" onclick="choosePayment(this)"><span>${['💵','📲','💳','🏦'][i]}</span>${p}</button>`).join('')}</div><input type="hidden" name="payment" value="Cash on Delivery"></div><div class="summary-card"><div class="summary-row"><span>${state.cart.reduce((s,i)=>s+i.qty,0)} item(s)</span><strong>${money(t.subtotal)}</strong></div><div class="summary-row"><span>You will earn</span><strong>+${earned} points</strong></div><div class="summary-row total"><span>Total</span><strong>${money(t.total)}</strong></div></div><p class="error-text" id="checkoutError"></p><button class="primary-btn" type="submit">Place Order · ${money(t.total)}</button><p style="font-size:8px;color:var(--muted);text-align:center">Demo only — no real payment will be processed.</p></form>`);
+}
+function choosePayment(el){el.parentElement.querySelectorAll('.payment-option').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');document.querySelector('[name=payment]').value=el.dataset.payment}
+function placeOrder(e){
+  e.preventDefault();const form=e.target;if(!form.reportValidity())return;const data=Object.fromEntries(new FormData(form));if(!data.name.trim()||!data.phone.trim()||!data.address.trim()||!data.city.trim()){document.getElementById('checkoutError').textContent='Please complete all required fields.';return}
+  const t=cartTotals(),earned=state.cart.reduce((s,i)=>s+product(i.id).points*i.qty,0),spent=state.usePoints?Math.round(t.pointsDiscount*100):0;const number=`RMS-${Math.floor(100000+Math.random()*900000)}`;
+  const user=currentUser();const order={number,date:new Date().toISOString(),customerId:user?.id||null,customer:data.name,email:data.email,phone:data.phone,address:data.address,city:data.city,total:t.total,earned,items:state.cart.map(x=>({...x})),payment:data.payment,paymentStatus:data.payment==='Cash on Delivery'?'Pending':'Submitted',status:'Processing'};state.orders.unshift(order);state.points=Math.max(0,state.points-spent)+earned;state.profile={...state.profile,name:data.name,email:data.email,phone:data.phone,address:data.address,city:data.city};if(user){user.name=data.name;user.email=data.email;user.phone=data.phone}state.cart=[];state.promo='';state.usePoints=false;save();renderNav();
+  openSuccess(order);
+}
+function openSuccess(order){modalRoot.innerHTML=`<div class="sheet success-sheet" role="dialog" aria-modal="true"><div class="grabber"></div><div class="success-badge">✓</div><h2>Order confirmed!</h2><p>Thanks, ${safe(order.customer)}. Your new phone journey starts now.</p><div class="success-data"><div class="summary-row"><span>Order number</span><strong>${order.number}</strong></div><div class="summary-row"><span>Total paid</span><strong>${money(order.total)}</strong></div><div class="summary-row"><span>Reward points earned</span><strong>+${order.earned}</strong></div></div><button class="primary-btn" onclick="closeSheet();setPage('home');confetti()">Continue Shopping</button></div>`;confetti()}
+
+function membership(){if(state.points>=3000)return 'Platinum';if(state.points>=1800)return 'Gold';if(state.points>=1000)return 'Silver';return 'Bronze'}
+function renderRewards(){
+  const level=membership(),next=level==='Bronze'?1000:level==='Silver'?1800:level==='Gold'?3000:state.points;const floor=level==='Bronze'?0:level==='Silver'?1000:level==='Gold'?1800:3000;const pct=level==='Platinum'?100:Math.min(100,((state.points-floor)/(next-floor))*100);const dash=326-(326*pct/100);
+  app.innerHTML=`${header('Rewards',`<button class="icon-btn" onclick="showRewardInfo()" aria-label="Rewards information">?</button>`)}<section class="rewards-hero"><p class="rewards-label">YOUR ${level.toUpperCase()} BALANCE</p><div class="progress-ring"><svg viewBox="0 0 120 120"><circle class="track" cx="60" cy="60" r="52"></circle><circle class="value" cx="60" cy="60" r="52" style="stroke-dashoffset:${dash}"></circle></svg><div class="ring-copy"><strong id="pointsCounter">0</strong><span>reward points</span></div></div><div class="level-progress-text">${level==='Platinum'?'You reached our highest level!':`${(next-state.points).toLocaleString()} points to ${level==='Gold'?'Platinum':level==='Silver'?'Gold':'Silver'}`}</div><div class="reward-actions"><button class="small-action" onclick="showOrders()">${icon('shop')}Purchases</button><button class="small-action" onclick="showPoints()">${icon('star')}Points</button><button class="small-action" onclick="showLevels()">${icon('arrow')}Level Up</button><button class="small-action" onclick="redeemPoints()">${icon('gift')}Redeem</button></div></section><div class="section-head"><h2>Membership levels</h2><button class="text-btn" onclick="showLevels()">How it works</button></div><div class="levels">${[['Bronze','🥉',0,999],['Silver','🥈',1000,1799],['Gold','🏆',1800,2999],['Platinum','💎',3000,5000]].map(([n,ic,min,max])=>{const fill=state.points<min?0:state.points>=max?100:((state.points-min)/(max-min))*100;return `<button class="level-card ${level===n?'current':''}" onclick="levelClick('${n}')"><div class="level-top"><span><b>${n}</b><p>${min.toLocaleString()}${n==='Platinum'?'+' : '–'+max.toLocaleString()} points</p></span><span class="level-icon">${ic}</span></div><div class="tiny-progress"><i style="width:${fill}%"></i></div></button>`}).join('')}</div><div class="section-head"><h2>Your Gold benefits</h2></div><div class="benefit-list"><div class="benefit"><span class="benefit-icon">🚚</span><span><b>Free priority delivery</b><span>On every eligible phone order</span></span></div><div class="benefit"><span class="benefit-icon">✦</span><span><b>2× reward points</b><span>Earn faster on selected products</span></span></div><div class="benefit"><span class="benefit-icon">🎁</span><span><b>Exclusive member offers</b><span>Early access to special prices</span></span></div></div><div class="section-head"><h2>Recent activity</h2><button class="text-btn" onclick="showPoints()">See all</button></div><div class="activity-list">${rewardActivity()}</div>`;
+  animateCounter(state.points);if(level==='Gold'&&!goldShown){goldShown=true;setTimeout(showGold,700)}
+}
+function customerOrders(){const user=currentUser();return state.orders.filter(o=>o.customerId===user?.id||(!o.customerId&&o.email&&o.email.toLowerCase()===user?.email.toLowerCase()))}
+function rewardActivity(){const acts=customerOrders().slice(0,2).map(o=>`<div class="activity"><span class="activity-icon">📱</span><span><b>Order ${o.number}</b><span>${new Date(o.date).toLocaleDateString()}</span></span><strong class="activity-points">+${o.earned}</strong></div>`);acts.push(`<div class="activity"><span class="activity-icon">⭐</span><span><b>Welcome Gold bonus</b><span>Membership reward</span></span><strong class="activity-points">+150</strong></div>`,`<div class="activity"><span class="activity-icon">🎟️</span><span><b>Delivery reward used</b><span>Recent redemption</span></span><strong class="activity-points spend">−50</strong></div>`);return acts.join('')}
+function animateCounter(end){const el=document.getElementById('pointsCounter');if(!el)return;const start=performance.now(),duration=1200;function step(t){const p=Math.min(1,(t-start)/duration);el.textContent=Math.floor(end*(1-Math.pow(1-p,3))).toLocaleString();if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)}
+function levelClick(n){if(n==='Gold')showGold();else toast(`${n} level ${membership()===n?'is your current tier':'details opened'}`)}
+function showGold(){openSheet(`<div class="gold-sheet"><div class="sheet-head"><span></span><button class="icon-btn close" onclick="closeSheet()" aria-label="Close">${icon('x')}</button></div><div class="trophy">🏆</div><h2>You’re Gold</h2><p>Congratulations, ${safe(state.profile.name)}! Your loyalty unlocked a more rewarding shopping experience.</p><div class="gold-benefits"><div class="gold-benefit"><span>🚚</span>Free delivery</div><div class="gold-benefit"><span>✦</span>2× points</div><div class="gold-benefit"><span>🎁</span>Member deals</div></div><button class="primary-btn" onclick="closeSheet();toast('Your Gold rewards are active')">View My Rewards</button></div>`);confetti()}
+function showRewardInfo(){infoSheet('How rewards work','Earn points whenever you buy a phone. Every 100 points can save $1 at checkout. Your membership level updates automatically.')}
+function showPoints(){openSheet(`<div class="sheet-head"><h2>Points activity</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><div class="activity-list">${rewardActivity()}</div>`)}
+function showLevels(){infoSheet('Membership levels','Bronze starts at 0 points, Silver at 1,000, Gold at 1,800 and Platinum at 3,000. Higher levels unlock faster points and premium benefits.')}
+function redeemPoints(){if(state.points<100)return toast('You need at least 100 points','!');infoSheet('Redeem points',`You have ${state.points.toLocaleString()} points, worth up to ${money(state.points/100)}. Turn on “Use reward points” in your cart to redeem them.`)}
+
+function renderProfile(){
+  const user=currentUser();const orders=customerOrders();
+  app.innerHTML=`${header('Settings')}<section class="profile-card"><div class="avatar">${safe((user?.name||'R')[0].toUpperCase())}</div><div><h2>${safe(user?.name||state.profile.name)}</h2><p>${safe(user?.email||state.profile.email)}</p><span class="role-pill">Customer</span></div><button onclick="editProfile()">Edit</button></section><div class="settings-section"><p class="section-label">My account</p><div class="settings-card">${settingRow('shop','Order history',`${orders.length} order${orders.length===1?'':'s'}`,'showOrders()')}${settingRow('heart','Wishlist',`${state.wishlist.length} saved phones`,'showWishlist()')}${settingRow('home','Saved addresses',state.profile.address?'1 saved address':'No saved address','editAddress()')}${settingRow('cart','Payment methods','Cash, Zaad, eDahab & cards','showPayments()')}</div></div><div class="settings-section"><p class="section-label">App</p><div class="settings-card">${settingRow('home','Install mobile app',isStandalone()?'Installed on this device':'Add to your Home Screen','installApp()')}</div></div><div class="settings-section"><p class="section-label">Preferences</p><div class="settings-card">${toggleRow('bell','Push notifications','Order and offer updates','notifications')}${toggleRow('user','Biometric lock','Visual demo setting','biometric')}${toggleRow('sun','Dark mode','Warm midnight appearance','theme')}<label class="settings-row"><span class="settings-icon">🌐</span><span class="settings-copy"><b>Language</b><span>App display language</span></span><select class="language-select" onchange="state.language=this.value;save();toast('Language preference saved')"><option ${state.language==='English'?'selected':''}>English</option><option ${state.language==='Somali'?'selected':''}>Somali</option><option ${state.language==='Arabic'?'selected':''}>Arabic</option></select></label></div></div><div class="settings-section"><p class="section-label">Support</p><div class="settings-card">${settingRow('gift','Help and support','FAQs and contact options','showHelp()')}${settingRow('user','About this app','Version 2.1.0','showAbout()')}<button class="settings-row logout" onclick="logoutDemo()"><span class="settings-icon">↪</span><span class="settings-copy"><b>Log out</b><span>End this signed-in session</span></span>${icon('chevron','chev')}</button></div></div>`;
+}
+function settingRow(ic,title,sub,fn){return `<button class="settings-row" onclick="${fn}"><span class="settings-icon">${icon(ic)}</span><span class="settings-copy"><b>${title}</b><span>${sub}</span></span>${icon('chevron','chev')}</button>`}
+function toggleRow(ic,title,sub,key){const on=key==='theme'?state.theme==='dark':state[key];return `<button class="settings-row" onclick="toggleSetting('${key}')"><span class="settings-icon">${icon(ic)}</span><span class="settings-copy"><b>${title}</b><span>${sub}</span></span><span class="toggle ${on?'on':''}" role="switch" aria-checked="${on}"><i></i></span></button>`}
+function toggleSetting(key){if(key==='theme')state.theme=state.theme==='dark'?'light':'dark';else state[key]=!state[key];save();if(isAdmin()&&state.page==='admin-settings')renderAdminSettings();else renderProfile();toast(key==='theme'?`${state.theme==='dark'?'Dark':'Light'} mode enabled`:'Setting updated')}
+function editProfile(){openSheet(`<form onsubmit="saveProfile(event)"><div class="sheet-head"><h2>Edit profile</h2><button type="button" class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><div class="form-grid"><label class="field full"><span>Full name</span><input name="name" value="${safe(state.profile.name)}" required></label><label class="field full"><span>Email</span><input name="email" type="email" value="${safe(state.profile.email)}" required></label><label class="field full"><span>Phone</span><input name="phone" type="tel" value="${safe(state.profile.phone)}"></label></div><button class="primary-btn" style="margin-top:16px">Save Profile</button></form>`)}
+function saveProfile(e){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const user=currentUser();const duplicate=state.users.some(u=>u.id!==user?.id&&u.email.toLowerCase()===d.email.trim().toLowerCase());if(duplicate)return toast('That email is already in use','!');state.profile={...state.profile,...d};if(user){user.name=d.name.trim();user.email=d.email.trim().toLowerCase();user.phone=d.phone.trim()}save();closeSheet();renderProfile();toast('Profile updated')}
+function editAddress(){openSheet(`<form onsubmit="saveAddress(event)"><div class="sheet-head"><h2>Saved address</h2><button type="button" class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><div class="form-grid"><label class="field full"><span>Delivery address</span><textarea name="address" required>${safe(state.profile.address)}</textarea></label><label class="field full"><span>City</span><input name="city" value="${safe(state.profile.city)}" required></label></div><button class="primary-btn" style="margin-top:16px">Save Address</button></form>`)}
+function saveAddress(e){e.preventDefault();Object.assign(state.profile,Object.fromEntries(new FormData(e.target)));save();closeSheet();renderProfile();toast('Address saved')}
+function showOrders(){const orders=customerOrders();openSheet(`<div class="sheet-head"><h2>Order history</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div>${orders.length?`<div class="activity-list">${orders.map(o=>`<div class="activity"><span class="activity-icon">📦</span><span><b>${o.number}</b><span>${new Date(o.date).toLocaleDateString()} · ${o.items.reduce((s,i)=>s+i.qty,0)} item(s) · ${safe(o.status||'Processing')}</span></span><strong>${money(o.total)}</strong></div>`).join('')}</div>`:`<div class="empty-state"><div class="empty-illustration">📦</div><h2>No orders yet</h2><p>Your completed orders will appear here.</p><button class="primary-btn" onclick="closeSheet();setPage('shop')">Explore Phones</button></div>`}`)}
+function showWishlist(){const list=PRODUCTS.filter(p=>state.wishlist.includes(p.id));openSheet(`<div class="sheet-head"><h2>Wishlist</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div>${list.length?`<div class="product-grid">${list.map(productCard).join('')}</div>`:`<div class="empty-state"><div class="empty-illustration">♡</div><h2>Nothing saved yet</h2><p>Tap the heart on any phone to save it.</p></div>`}`)}
+function showPayments(){infoSheet('Payment methods','At checkout you can choose Cash on Delivery, Zaad, eDahab, or Credit/Debit Card. This front-end demo never processes real payments.')}
+function showHelp(){openSheet(`<div class="sheet-head"><h2>Help & support</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><div class="benefit-list"><button class="benefit" onclick="infoSheet('Delivery information','Orders in Hargeisa normally arrive the same day. Other locations are shown as a demonstration only.')"><span class="benefit-icon">🚚</span><span><b>Delivery information</b><span>Times, fees and locations</span></span></button><button class="benefit" onclick="infoSheet('Returns','Demo orders can be reviewed in Order History. No real purchase is created.')"><span class="benefit-icon">↩</span><span><b>Returns & refunds</b><span>Learn about the demo policy</span></span></button><button class="benefit" onclick="toast('Support request drafted')"><span class="benefit-icon">💬</span><span><b>Contact support</b><span>Get help with your order</span></span></button></div>`)}
+function showAbout(){infoSheet('Ridwaan Mobile Store','A premium installable mobile shopping app designed and built with HTML5, CSS3 and vanilla JavaScript. Version 2.1.0.')}
+function logoutDemo(){openSheet(`<div class="sheet-head"><h2>Log out?</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><p class="sheet-note">Your account, orders and rewards remain saved. Only this session will end.</p><div class="sheet-actions"><button class="secondary-btn" onclick="closeSheet()">Cancel</button><button class="primary-btn" onclick="signOut()">Log Out</button></div>`)}
+
+function adminHeader(title,subtitle,action=''){
+  const user=currentUser();return `<header class="admin-head"><div><p class="eyebrow">ADMIN CONTROL CENTER</p><h1>${title}</h1><span>${subtitle}</span></div>${action||`<button class="avatar admin-avatar" onclick="setPage('admin-settings')" aria-label="Admin settings">${safe((user?.name||'A')[0])}</button>`}</header>`;
+}
+function renderAdminDashboard(){
+  const revenue=state.orders.filter(o=>o.paymentStatus==='Paid'||o.paymentStatus==='Submitted').reduce((s,o)=>s+Number(o.total||0),0);const pending=state.orders.filter(o=>!['Delivered','Cancelled'].includes(o.status)).length;const customers=state.users.filter(u=>u.role==='customer').length;const recent=state.orders.slice(0,4);
+  app.innerHTML=`${adminHeader('Dashboard','Overview of your mobile store')}<section class="admin-welcome"><div><span>Store performance</span><h2>Everything is under control.</h2><p>Manage sales, customers, products and payments from one place.</p></div><i>⌁</i></section><div class="admin-stats"><button onclick="setPage('admin-orders')"><span class="stat-icon orange">$</span><b>${money(revenue)}</b><small>Processed revenue</small></button><button onclick="setPage('admin-orders')"><span class="stat-icon gold">◷</span><b>${pending}</b><small>Active orders</small></button><button onclick="setPage('admin-users')"><span class="stat-icon green">♙</span><b>${customers}</b><small>Customers</small></button><button onclick="setPage('admin-products')"><span class="stat-icon dark">▦</span><b>${PRODUCTS.length}</b><small>Products</small></button></div><div class="section-head"><h2>Quick actions</h2></div><div class="admin-quick"><button onclick="openProductEditor()"><span>＋</span><b>Add product</b><small>Create a new listing</small></button><button onclick="setPage('admin-orders')"><span>💳</span><b>Payments</b><small>Review transactions</small></button><button onclick="setPage('admin-users')"><span>👥</span><b>User roles</b><small>Control access</small></button></div><div class="section-head"><h2>Recent orders</h2><button class="text-btn" onclick="setPage('admin-orders')">View all</button></div>${recent.length?`<div class="admin-list">${recent.map(adminOrderRow).join('')}</div>`:`<div class="admin-empty"><span>📦</span><b>No orders yet</b><p>Customer purchases will appear here instantly.</p></div>`}<div class="section-head"><h2>Inventory alerts</h2></div><div class="admin-list">${PRODUCTS.filter(p=>!p.stock).slice(0,3).map(p=>`<button class="admin-row" onclick="openProductEditor(${p.id})"><span class="admin-thumb"><img src="${p.image}" alt="" onerror="imageFallback(this)"></span><span><b>${safe(p.name)}</b><small>${p.brand} · Out of stock</small></span><span class="status-tag danger">Restock</span></button>`).join('')||`<div class="admin-empty compact"><span>✓</span><b>Inventory looks healthy</b></div>`}</div>`;
+}
+function adminOrderRow(o){return `<button class="admin-row" onclick="openAdminOrder('${o.number}')"><span class="admin-row-icon">📦</span><span><b>${safe(o.number)}</b><small>${safe(o.customer||'Customer')} · ${new Date(o.date).toLocaleDateString()}</small></span><span class="row-end"><b>${money(o.total)}</b><em class="status-tag ${statusClass(o.paymentStatus)}">${safe(o.paymentStatus||'Pending')}</em></span></button>`}
+function statusClass(value=''){return /paid|delivered|active/i.test(value)?'success':/cancel|failed|suspend|refunded/i.test(value)?'danger':/submitted|shipped/i.test(value)?'info':'warning'}
+
+function renderAdminProducts(){
+  app.innerHTML=`${adminHeader('Products',`${PRODUCTS.length} smartphone listings`,`<button class="admin-add" onclick="openProductEditor()">${icon('plus')} Add</button>`)}<label class="admin-search">${icon('search')}<input id="adminProductSearch" placeholder="Search inventory..." oninput="filterAdminProducts(this.value)" aria-label="Search inventory"></label><div class="admin-filter-line"><span><b id="adminProductCount">${PRODUCTS.length}</b> products</span><button onclick="adminProductStockFilter('all',this)" class="active">All</button><button onclick="adminProductStockFilter('in',this)">In stock</button><button onclick="adminProductStockFilter('out',this)">Out</button></div><div class="admin-list product-admin-list" id="adminProductList">${PRODUCTS.map(adminProductRow).join('')}</div>`;
+}
+function adminProductRow(p){return `<article class="admin-product-row" data-name="${safe((p.name+' '+p.brand).toLowerCase())}" data-stock="${p.stock?'in':'out'}"><span class="admin-thumb product"><img src="${p.image}" alt="${safe(p.name)}" onerror="imageFallback(this)"></span><span class="admin-product-copy"><b>${safe(p.name)}</b><small>${safe(p.brand)} · ${p.storage.join(', ')}</small><strong>${money(p.price)}</strong></span><span class="admin-product-actions"><em class="status-tag ${p.stock?'success':'danger'}">${p.stock?'Live':'Out'}</em><button onclick="openProductEditor(${p.id})" aria-label="Edit ${safe(p.name)}">✎</button><button class="danger-action" onclick="confirmDeleteProduct(${p.id})" aria-label="Delete ${safe(p.name)}">${icon('trash')}</button></span></article>`}
+function filterAdminProducts(value){const q=value.toLowerCase();let count=0;document.querySelectorAll('.admin-product-row').forEach(row=>{const show=row.dataset.name.includes(q);row.hidden=!show;if(show)count++});document.getElementById('adminProductCount').textContent=count}
+function adminProductStockFilter(filter,btn){btn.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('active'));btn.classList.add('active');let count=0;document.querySelectorAll('.admin-product-row').forEach(row=>{const show=filter==='all'||row.dataset.stock===filter;row.hidden=!show;if(show)count++});document.getElementById('adminProductCount').textContent=count}
+function openProductEditor(id=null){
+  const p=id?product(id):null;openSheet(`<form onsubmit="saveAdminProduct(event,${p?p.id:'null'})"><div class="sheet-head"><h2>${p?'Edit product':'Add new product'}</h2><button type="button" class="icon-btn close" onclick="closeSheet()" aria-label="Close">${icon('x')}</button></div><div class="form-grid"><label class="field full"><span>Product name *</span><input name="name" value="${safe(p?.name||'')}" required></label><label class="field"><span>Brand *</span><input name="brand" value="${safe(p?.brand||'')}" required></label><label class="field"><span>Storage options *</span><input name="storage" value="${safe(p?.storage.join(', ')||'128GB, 256GB')}" required></label><label class="field"><span>Current price *</span><input name="price" type="number" min="1" step="0.01" value="${p?.price||''}" required></label><label class="field"><span>Old price *</span><input name="oldPrice" type="number" min="1" step="0.01" value="${p?.oldPrice||''}" required></label><label class="field full"><span>Image URL</span><input name="image" type="url" value="${safe(p?.image||'')}" placeholder="https://..."></label><label class="field"><span>Reward points</span><input name="points" type="number" min="0" value="${p?.points||50}"></label><label class="field"><span>Rating</span><input name="rating" type="number" min="1" max="5" step="0.1" value="${p?.rating||4.5}"></label><label class="field full"><span>Description *</span><textarea name="description" required>${safe(p?.description||'')}</textarea></label><label class="admin-checkbox full"><input name="stock" type="checkbox" ${p?.stock!==false?'checked':''}> Product is available and in stock</label></div><p class="error-text" id="productFormError"></p><button class="primary-btn" type="submit">${p?'Save Changes':'Add Product'}</button></form>`)}
+function saveAdminProduct(e,id){
+  e.preventDefault();const d=Object.fromEntries(new FormData(e.target));const price=Number(d.price),oldPrice=Number(d.oldPrice);if(oldPrice<price){document.getElementById('productFormError').textContent='Old price must be equal to or higher than current price.';return}const data={name:d.name.trim(),brand:d.brand.trim(),storage:d.storage.split(',').map(s=>s.trim()).filter(Boolean),price,oldPrice,discount:Math.max(0,Math.round((oldPrice-price)/oldPrice*100)),image:d.image.trim()||SEED_PRODUCTS[0].image,points:Number(d.points)||0,rating:Number(d.rating)||4.5,reviews:id?(product(id)?.reviews||0):0,stock:d.stock==='on',description:d.description.trim(),colors:id?(product(id)?.colors||[['Graphite','#444'],['Cream','#ddd']]):[['Graphite','#444'],['Cream','#ddd']]};
+  if(id){Object.assign(product(id),data)}else{data.id=Math.max(0,...PRODUCTS.map(p=>Number(p.id)))+1;PRODUCTS.unshift(data)}state.products=PRODUCTS;save();closeSheet();setPage('admin-products');toast(id?'Product updated':'Product added successfully')
+}
+function confirmDeleteProduct(id){const p=product(id);openSheet(`<div class="sheet-head"><h2>Delete product?</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><p class="sheet-note"><b>${safe(p.name)}</b> will be removed from the customer shop and inventory.</p><div class="sheet-actions"><button class="secondary-btn" onclick="closeSheet()">Cancel</button><button class="primary-btn danger-button" onclick="deleteProduct(${id})">Delete Product</button></div>`)}
+function deleteProduct(id){PRODUCTS=PRODUCTS.filter(p=>p.id!==Number(id));state.products=PRODUCTS;state.cart=state.cart.filter(i=>i.id!==Number(id));state.wishlist=state.wishlist.filter(x=>x!==Number(id));save();closeSheet();setPage('admin-products');toast('Product deleted')}
+
+function renderAdminOrders(){
+  const paid=state.orders.filter(o=>o.paymentStatus==='Paid').reduce((s,o)=>s+o.total,0),pending=state.orders.filter(o=>['Pending','Submitted'].includes(o.paymentStatus||'Pending')).reduce((s,o)=>s+o.total,0);
+  app.innerHTML=`${adminHeader('Orders & Payments','Review transactions and fulfilment')}<div class="payment-overview"><div><span>Confirmed payments</span><b>${money(paid)}</b><small>${state.orders.filter(o=>o.paymentStatus==='Paid').length} paid orders</small></div><div><span>Awaiting review</span><b>${money(pending)}</b><small>${state.orders.filter(o=>['Pending','Submitted'].includes(o.paymentStatus||'Pending')).length} transactions</small></div></div><label class="admin-search">${icon('search')}<input placeholder="Search order or customer..." oninput="filterAdminOrders(this.value)" aria-label="Search orders"></label><div class="admin-list" id="adminOrderList">${state.orders.length?state.orders.map(o=>`<article class="admin-order-card" data-order="${safe((o.number+' '+o.customer).toLowerCase())}"><div class="order-card-head"><span><b>${safe(o.number)}</b><small>${new Date(o.date).toLocaleString()}</small></span><strong>${money(o.total)}</strong></div><div class="order-customer"><span>👤</span><span><b>${safe(o.customer)}</b><small>${safe(o.phone||o.email||'No contact')}</small></span><em>${safe(o.payment)}</em></div><div class="order-controls"><label>Payment<select onchange="updateOrder('${o.number}','paymentStatus',this.value)">${['Pending','Submitted','Paid','Failed','Refunded'].map(v=>`<option ${o.paymentStatus===v?'selected':''}>${v}</option>`).join('')}</select></label><label>Order<select onchange="updateOrder('${o.number}','status',this.value)">${['Processing','Confirmed','Shipped','Delivered','Cancelled'].map(v=>`<option ${(o.status||'Processing')===v?'selected':''}>${v}</option>`).join('')}</select></label></div><button class="order-detail-btn" onclick="openAdminOrder('${o.number}')">View full order ${icon('chevron')}</button></article>`).join(''):`<div class="admin-empty"><span>💳</span><b>No payments yet</b><p>New checkout transactions will be listed here.</p></div>`}</div>`;
+}
+function filterAdminOrders(value){const q=value.toLowerCase();document.querySelectorAll('.admin-order-card').forEach(x=>x.hidden=!x.dataset.order.includes(q))}
+function updateOrder(number,field,value){const order=state.orders.find(o=>o.number===number);if(!order)return;order[field]=value;save();toast(`${field==='status'?'Order':'Payment'} status updated`);if(state.page==='admin-orders')renderAdminOrders()}
+function openAdminOrder(number){const o=state.orders.find(x=>x.number===number);if(!o)return;openSheet(`<div class="sheet-head"><h2>${safe(o.number)}</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><div class="order-detail-hero"><span class="status-tag ${statusClass(o.status)}">${safe(o.status||'Processing')}</span><b>${money(o.total)}</b><small>${new Date(o.date).toLocaleString()}</small></div><div class="settings-card"><div class="settings-row"><span class="settings-icon">👤</span><span class="settings-copy"><b>${safe(o.customer)}</b><span>${safe(o.phone||'')} · ${safe(o.email||'')}</span></span></div><div class="settings-row"><span class="settings-icon">📍</span><span class="settings-copy"><b>Delivery address</b><span>${safe(o.address||'Not provided')}, ${safe(o.city||'')}</span></span></div><div class="settings-row"><span class="settings-icon">💳</span><span class="settings-copy"><b>${safe(o.payment)}</b><span>${safe(o.paymentStatus||'Pending')}</span></span></div></div><div class="section-head"><h2>Items</h2></div><div class="activity-list">${o.items.map(i=>{const p=product(i.id);return `<div class="activity"><span class="activity-icon">📱</span><span><b>${safe(p?.name||'Removed product')}</b><span>${i.qty} × ${safe(i.storage)} · ${safe(i.color)}</span></span><strong>${money((p?.price||0)*i.qty)}</strong></div>`}).join('')}</div></div>`)}
+
+function renderAdminUsers(){
+  const active=state.users.filter(u=>u.status==='active').length,admins=state.users.filter(u=>u.role==='admin').length;
+  app.innerHTML=`${adminHeader('Users & Roles',`${state.users.length} registered accounts`)}<div class="admin-stats user-stats"><button><span class="stat-icon green">✓</span><b>${active}</b><small>Active</small></button><button><span class="stat-icon orange">♙</span><b>${admins}</b><small>Admins</small></button></div><label class="admin-search">${icon('search')}<input placeholder="Search users..." oninput="filterAdminUsers(this.value)" aria-label="Search users"></label><div class="admin-list">${state.users.map(adminUserRow).join('')}</div>`;
+}
+function adminUserRow(u){const self=u.id===currentUser()?.id;return `<article class="admin-user-row" data-user="${safe((u.name+' '+u.email).toLowerCase())}"><span class="user-avatar">${safe(u.name[0].toUpperCase())}</span><span class="admin-user-copy"><b>${safe(u.name)} ${self?'<em>You</em>':''}</b><small>${safe(u.email)}</small><i>${new Date(u.createdAt).toLocaleDateString()}</i></span><span class="admin-user-controls"><select onchange="updateUserRole('${u.id}',this.value)" ${self?'disabled':''} aria-label="Role for ${safe(u.name)}"><option value="customer" ${u.role==='customer'?'selected':''}>Customer</option><option value="admin" ${u.role==='admin'?'selected':''}>Admin</option><option value="manager" ${u.role==='manager'?'selected':''}>Manager</option></select><button class="status-tag ${u.status==='active'?'success':'danger'}" onclick="toggleUserStatus('${u.id}')" ${self?'disabled':''}>${u.status==='active'?'Active':'Suspended'}</button>${!self?`<button class="user-delete" onclick="confirmDeleteUser('${u.id}')" aria-label="Delete ${safe(u.name)}">${icon('trash')}</button>`:''}</span></article>`}
+function filterAdminUsers(value){const q=value.toLowerCase();document.querySelectorAll('.admin-user-row').forEach(x=>x.hidden=!x.dataset.user.includes(q))}
+function updateUserRole(id,role){const user=state.users.find(u=>u.id===id);if(!user)return;user.role=role;save();toast(`${user.name} is now ${role}`);renderAdminUsers()}
+function toggleUserStatus(id){const user=state.users.find(u=>u.id===id);if(!user||id===currentUser()?.id)return;user.status=user.status==='active'?'suspended':'active';save();renderAdminUsers();toast(`${user.name} ${user.status==='active'?'activated':'suspended'}`)}
+function confirmDeleteUser(id){const user=state.users.find(u=>u.id===id);openSheet(`<div class="sheet-head"><h2>Delete user?</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><p class="sheet-note">Delete <b>${safe(user.name)}</b> and revoke their access? Existing order records will remain.</p><div class="sheet-actions"><button class="secondary-btn" onclick="closeSheet()">Cancel</button><button class="primary-btn danger-button" onclick="deleteUser('${id}')">Delete User</button></div>`)}
+function deleteUser(id){if(id===currentUser()?.id)return;state.users=state.users.filter(u=>u.id!==id);save();closeSheet();renderAdminUsers();toast('User account deleted')}
+
+function renderAdminSettings(){const user=currentUser();app.innerHTML=`${adminHeader('Admin Settings','Account and store preferences')}<section class="profile-card admin-profile"><div class="avatar">${safe(user.name[0])}</div><div><h2>${safe(user.name)}</h2><p>${safe(user.email)}</p><span class="role-pill">Administrator</span></div><button onclick="editAdminProfile()">Edit</button></section><div class="settings-section"><p class="section-label">Store</p><div class="settings-card">${toggleRow('sun','Dark mode','Switch dashboard appearance','theme')}${settingRow('shop','Store information','Ridwaan Mobile Store','showStoreInfo()')}${settingRow('gift','Export demo data','Products, users and orders','showExportData()')}</div></div><div class="settings-section"><p class="section-label">Security</p><div class="settings-card">${settingRow('user','Change password','Update admin access password','changeAdminPassword()')}<button class="settings-row logout" onclick="logoutDemo()"><span class="settings-icon">↪</span><span class="settings-copy"><b>Log out</b><span>End administrator session</span></span>${icon('chevron','chev')}</button></div></div><div class="system-card"><span>System status</span><b><i></i> All systems operational</b><small>${PRODUCTS.length} products · ${state.users.length} users · ${state.orders.length} orders</small></div>`}
+function editAdminProfile(){const u=currentUser();openSheet(`<form onsubmit="saveAdminProfile(event)"><div class="sheet-head"><h2>Edit admin profile</h2><button type="button" class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><div class="form-grid"><label class="field full"><span>Name</span><input name="name" value="${safe(u.name)}" required></label><label class="field full"><span>Email</span><input name="email" type="email" value="${safe(u.email)}" required></label><label class="field full"><span>Phone</span><input name="phone" value="${safe(u.phone||'')}"></label></div><button class="primary-btn" style="margin-top:15px">Save Profile</button></form>`)}
+function saveAdminProfile(e){e.preventDefault();const d=Object.fromEntries(new FormData(e.target)),u=currentUser();if(state.users.some(x=>x.id!==u.id&&x.email.toLowerCase()===d.email.toLowerCase()))return toast('Email already in use','!');Object.assign(u,{name:d.name.trim(),email:d.email.trim().toLowerCase(),phone:d.phone.trim()});save();closeSheet();renderAdminSettings();toast('Admin profile updated')}
+function changeAdminPassword(){openSheet(`<form onsubmit="saveAdminPassword(event)"><div class="sheet-head"><h2>Change password</h2><button type="button" class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><div class="form-grid"><label class="field full"><span>Current password</span><input name="current" type="password" required></label><label class="field full"><span>New password</span><input name="password" type="password" minlength="8" required></label></div><p class="error-text" id="adminPasswordError"></p><button class="primary-btn" style="margin-top:12px">Update Password</button></form>`)}
+function saveAdminPassword(e){e.preventDefault();const d=Object.fromEntries(new FormData(e.target)),u=currentUser();if(u.passwordHash!==hashText(d.current)){document.getElementById('adminPasswordError').textContent='Current password is incorrect.';return}u.passwordHash=hashText(d.password);save();closeSheet();toast('Admin password updated')}
+function showStoreInfo(){infoSheet('Store information','Ridwaan Mobile Store · Hargeisa, Somaliland. Currency: USD. Supported demo payments: Cash on Delivery, Zaad, eDahab and cards.')}
+function showExportData(){const data=JSON.stringify({products:PRODUCTS,users:state.users.map(({passwordHash,...u})=>u),orders:state.orders},null,2);openSheet(`<div class="sheet-head"><h2>Export demo data</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><p class="sheet-note">A password-free JSON snapshot of the current store data.</p><textarea class="export-data" id="exportData" readonly>${safe(data)}</textarea><button class="primary-btn" onclick="copyExportData()">Copy JSON</button>`)}
+function copyExportData(){const el=document.getElementById('exportData');el.select();try{document.execCommand('copy');toast('Store data copied')}catch{toast('Select and copy the JSON manually','!')}}
+
+function infoSheet(title,text){openSheet(`<div class="sheet-head"><h2>${safe(title)}</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><p style="color:var(--muted);font-size:12px;line-height:1.7">${safe(text)}</p><button class="primary-btn" onclick="closeSheet()">Got it</button>`)}
+function openSheet(content){modalRoot.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="grabber"></div>${content}</div>`;modalRoot.onclick=e=>{if(e.target===modalRoot)closeSheet()};setTimeout(()=>modalRoot.querySelector('button,input')?.focus(),100)}
+function closeSheet(){modalRoot.innerHTML='';modalRoot.onclick=null}
+function toast(message,mark='✓'){const el=document.createElement('div');el.className='toast';el.innerHTML=`<i>${mark}</i><span>${safe(message)}</span>`;document.getElementById('toastRegion').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(-10px)';setTimeout(()=>el.remove(),250)},2300)}
+function confetti(){const colors=['#f2b72b','#db4f16','#ffdf83','#8b3512'];for(let i=0;i<24;i++){const s=document.createElement('i');s.style.cssText=`position:fixed;z-index:90;left:${45+Math.random()*10}%;top:42%;width:${4+Math.random()*5}px;height:${6+Math.random()*7}px;background:${colors[i%colors.length]};border-radius:2px;pointer-events:none;transition:transform 1.1s cubic-bezier(.2,.7,.3,1),opacity 1.1s`;document.body.appendChild(s);requestAnimationFrame(()=>{s.style.transform=`translate(${(Math.random()-.5)*340}px,${Math.random()*420-210}px) rotate(${Math.random()*600}deg)`;s.style.opacity='0'});setTimeout(()=>s.remove(),1200)}}
+
+init();
