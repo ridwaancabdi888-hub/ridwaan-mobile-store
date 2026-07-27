@@ -1,0 +1,22 @@
+{
+  "id": "/",
+  "name": "Ridwaan Mobile Store",
+  "short_name": "Ridwaan Store",
+  "description": "Shop premium smartphones, manage orders and earn rewards.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "portrait-primary",
+  "background_color": "#fbf5ef",
+  "theme_color": "#db4f16",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "icons/icon-source.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
