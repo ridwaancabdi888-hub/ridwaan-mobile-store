@@ -1,387 +1,56 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="description" content="Explore Ridwaan Mobile Store, a responsive smartphone shopping app demo with product search, cart, checkout, rewards, wishlists, and dark mode.">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<meta name="theme-color" content="#FAF5EE">
-<meta name="color-scheme" content="light dark">
-<title>Ridwaan Mobile Store | Smartphone Shopping App Demo</title>
-<link rel="canonical" href="https://ridwaan-mobile-store.vercel.app/">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Ridwaan Mobile Store">
-<meta property="og:title" content="Ridwaan Mobile Store | Smartphone Shopping App Demo">
-<meta property="og:description" content="Explore smartphones, compare options, manage a cart and try a complete mobile-first shopping experience in this front-end demo.">
-<meta property="og:url" content="https://ridwaan-mobile-store.vercel.app/">
-<meta property="og:locale" content="en_US">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ridwaan Mobile Store | Smartphone Shopping App Demo">
-<meta name="twitter:description" content="Try a responsive smartphone shopping demo with search, cart, checkout, wishlists and rewards.">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": "https://ridwaan-mobile-store.vercel.app/#website",
-      "url": "https://ridwaan-mobile-store.vercel.app/",
-      "name": "Ridwaan Mobile Store",
-      "description": "A responsive front-end demonstration of a smartphone shopping application.",
-      "inLanguage": "en",
-      "creator": {
-        "@id": "https://ridwaan-mobile-store.vercel.app/#creator"
-      }
-    },
-    {
-      "@type": "SoftwareApplication",
-      "@id": "https://ridwaan-mobile-store.vercel.app/#application",
-      "name": "Ridwaan Mobile Store",
-      "url": "https://ridwaan-mobile-store.vercel.app/",
-      "applicationCategory": "ShoppingApplication",
-      "operatingSystem": "Any modern web browser",
-      "description": "A mobile-first smartphone shopping app demo with search, filters, cart, checkout, rewards, wishlists and persistent browser state.",
-      "isAccessibleForFree": true,
-      "author": {
-        "@id": "https://ridwaan-mobile-store.vercel.app/#creator"
-      }
-    },
-    {
-      "@type": "Person",
-      "@id": "https://ridwaan-mobile-store.vercel.app/#creator",
-      "name": "Ridwaan",
-      "url": "https://github.com/ridwaancabdi888-hub",
-      "sameAs": [
-        "https://github.com/ridwaancabdi888-hub"
-      ]
-    }
-  ]
-}
-</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fbf5ef">
+  <meta name="description" content="Ridwaan Mobile Store — a premium mobile-first smartphone shopping experience.">
+  <meta name="application-name" content="Ridwaan Store">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ridwaan Store">
+  <title>Ridwaan Mobile Store</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="icons/icon-source.svg">
+  <link rel="apple-touch-icon" href="icons/icon-source.svg">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="stage">
-  <div class="phone" id="app">
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+  <main class="phone-shell" id="appShell" aria-live="polite">
+    <div class="status-strip"><span id="clock">9:41</span><span class="status-icons">● 5G ▰</span></div>
+    <section class="app-view" id="appView"></section>
+    <nav class="bottom-nav" id="bottomNav" aria-label="Main navigation"></nav>
+    <div class="toast-region" id="toastRegion" aria-live="assertive"></div>
+    <div class="modal-root" id="modalRoot"></div>
+    <button class="pwa-install-fab" id="pwaInstallFab" type="button" onclick="installApp()" aria-label="Install Ridwaan Mobile Store">
+      <span aria-hidden="true">↓</span> Install App
+    </button>
+  </main>
 
-    <!-- ================= HOME ================= -->
-    <main class="screen" id="screen-home" aria-label="Home">
-      <header class="home-top">
-        <button class="avatar" id="homeAvatar" aria-label="Open profile">R</button>
-        <div class="home-greet">
-          <p class="greet-hi">Hello, Ridwaan 👋</p>
-          <h1 class="greet-sub">Find your next smartphone</h1>
-        </div>
-        <button class="icon-btn" id="notifBtn" aria-label="Notifications">
-          <svg viewBox="0 0 24 24"><path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm7-6-1.5-1.7V10a5.5 5.5 0 0 0-4.2-5.35V4a1.3 1.3 0 1 0-2.6 0v.65A5.5 5.5 0 0 0 6.5 10v4.3L5 16a1 1 0 0 0 .75 1.66h12.5A1 1 0 0 0 19 16Z"/></svg>
-          <span class="dot" aria-hidden="true"></span>
-        </button>
-      </header>
-
-      <div class="search-row">
-        <label class="search" for="homeSearch">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 1 0 4.7 13.35l4.22 4.22a1 1 0 0 0 1.42-1.42l-4.22-4.22A7.5 7.5 0 0 0 10.5 3Zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Z"/></svg>
-          <input id="homeSearch" type="search" placeholder="Search phones or brands…" autocomplete="off">
-        </label>
-        <button class="filter-btn" id="homeFilterBtn" aria-label="Open shop filters">
-          <svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4" stroke-width="2.2" stroke-linecap="round" stroke="currentColor" fill="none"/></svg>
-        </button>
-      </div>
-
-      <section class="hero card-anim" aria-label="Featured offer">
-        <div class="hero-copy">
-          <span class="hero-tag">Featured</span>
-          <h2 id="heroTitle">iPhone 16 Pro Max</h2>
-          <p id="heroSub">Titanium. A18 Pro. Save $100 today.</p>
-          <button class="btn btn-light" id="heroShop">Shop now</button>
-        </div>
-        <div class="hero-art" id="heroArt" aria-hidden="true"></div>
-      </section>
-
-      <section aria-label="Brands">
-        <div class="brand-row" id="homeBrands"></div>
-      </section>
-
-      <section aria-label="Popular phones">
-        <div class="sec-head"><h3>Popular phones</h3><button class="link" data-goto="shop">See all</button></div>
-        <div class="h-scroll" id="popularRow"></div>
-      </section>
-
-      <section aria-label="Special offers">
-        <div class="sec-head"><h3>Special offers</h3><button class="link" data-goto="shop">See all</button></div>
-        <div class="h-scroll" id="offersRow"></div>
-      </section>
-
-      <section class="mini-rewards card-anim" id="homeRewards" role="button" tabindex="0" aria-label="Open rewards">
-        <div class="mini-ring" id="miniRing"><span id="miniPts">0</span></div>
-        <div>
-          <p class="mini-title">My rewards</p>
-          <p class="mini-sub" id="miniLevelText">Gold member</p>
-        </div>
-        <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
-      </section>
-    </main>
-
-    <!-- ================= SHOP ================= -->
-    <main class="screen hidden" id="screen-shop" aria-label="Shop">
-      <header class="page-head">
-        <h2>Shop</h2>
-        <button class="icon-btn" id="clearFilters" aria-label="Clear all filters">
-          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/></svg>
-        </button>
-      </header>
-      <div class="search-row">
-        <label class="search" for="shopSearch">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.5 3a7.5 7.5 0 1 0 4.7 13.35l4.22 4.22a1 1 0 0 0 1.42-1.42l-4.22-4.22A7.5 7.5 0 0 0 10.5 3Zm0 2a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Z"/></svg>
-          <input id="shopSearch" type="search" placeholder="Search products…" autocomplete="off">
-        </label>
-        <button class="filter-btn" id="shopFilterBtn" aria-label="Sort and filter" aria-expanded="false">
-          <svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4" stroke-width="2.2" stroke-linecap="round" stroke="currentColor" fill="none"/></svg>
-        </button>
-      </div>
-      <div class="brand-row" id="shopBrands"></div>
-      <div class="filters-panel hidden" id="filtersPanel">
-        <div class="f-group">
-          <label for="sortSel">Sort by</label>
-          <select id="sortSel">
-            <option value="featured">Featured</option>
-            <option value="price-asc">Price: low to high</option>
-            <option value="price-desc">Price: high to low</option>
-            <option value="rating">Top rated</option>
-            <option value="discount">Biggest discount</option>
-          </select>
-        </div>
-        <div class="f-group">
-          <label for="priceRange">Max price: <strong id="priceLabel">$1,500</strong></label>
-          <input type="range" id="priceRange" min="300" max="1500" step="50" value="1500">
-        </div>
-        <label class="check"><input type="checkbox" id="inStockOnly"> In stock only</label>
-      </div>
-      <p class="count" id="shopCount" aria-live="polite"></p>
-      <div class="grid" id="shopGrid"></div>
-    </main>
-
-    <!-- ================= CART ================= -->
-    <main class="screen hidden" id="screen-cart" aria-label="Cart">
-      <header class="page-head"><h2>My cart</h2><span class="pill" id="cartCountPill">0 items</span></header>
-      <div id="cartList"></div>
-      <div id="cartFooter" class="hidden">
-        <div class="promo-row">
-          <label class="sr-only" for="promoInput">Promo code</label>
-          <input id="promoInput" type="text" placeholder="Promo code (try RIDWAAN10)" autocomplete="off">
-          <button class="btn btn-ghost" id="applyPromo">Apply</button>
-        </div>
-        <div class="summary card-anim">
-          <div class="s-row"><span>Subtotal</span><span id="sumSub">$0</span></div>
-          <div class="s-row"><span>Delivery</span><span id="sumDel">$0</span></div>
-          <div class="s-row s-good hidden" id="rowPromo"><span>Promo discount</span><span id="sumPromo">–$0</span></div>
-          <div class="s-row s-good"><span>Points discount <button class="link" id="usePointsBtn">Use 500 pts</button></span><span id="sumPts">–$0</span></div>
-          <div class="s-row s-total"><span>Total</span><span id="sumTotal">$0</span></div>
-        </div>
-        <button class="btn btn-primary btn-big" id="checkoutBtn">Checkout</button>
-      </div>
-      <div id="cartEmpty" class="empty hidden">
-        <div class="empty-art" aria-hidden="true">🛒</div>
-        <h2>Your cart is empty</h2>
-        <p>Browse the shop and add a phone you love.</p>
-        <button class="btn btn-primary" data-goto="shop">Go to shop</button>
-      </div>
-    </main>
-
-    <!-- ================= REWARDS ================= -->
-    <main class="screen hidden" id="screen-rewards" aria-label="Rewards">
-      <header class="page-head">
-        <button class="icon-btn" data-goto="home" aria-label="Back to home">
-          <svg viewBox="0 0 24 24"><path d="m14 6-6 6 6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
-        </button>
-        <h2>Rewards</h2><span style="width:42px"></span>
-      </header>
-
-      <section class="rewards-card card-anim" aria-label="Points balance">
-        <div class="ring-wrap">
-          <svg class="ring" viewBox="0 0 120 120" aria-hidden="true">
-            <circle class="ring-bg" cx="60" cy="60" r="52"/>
-            <circle class="ring-fg" id="ringFg" cx="60" cy="60" r="52"/>
-          </svg>
-          <div class="ring-center">
-            <strong id="ringPts">0</strong><span>points</span>
-          </div>
-        </div>
-        <p class="ring-progress" id="ringProgress"></p>
-        <div class="reward-actions">
-          <button class="ra" id="raPurchases"><span>🧾</span>Purchases</button>
-          <button class="ra" id="raPoints"><span>✨</span>Points</button>
-          <button class="ra" id="raLevel"><span>🏆</span>Level up</button>
-          <button class="ra" id="raRedeem"><span>🎁</span>Redeem</button>
-        </div>
-      </section>
-
-      <section aria-label="Membership levels">
-        <div class="sec-head"><h3>Membership levels</h3></div>
-        <div id="levelList"></div>
-      </section>
-
-      <section aria-label="Benefits">
-        <div class="sec-head"><h3>Your benefits</h3></div>
-        <ul class="benefits" id="benefitList"></ul>
-      </section>
-
-      <section aria-label="Recent activity">
-        <div class="sec-head"><h3>Recent activity</h3></div>
-        <div id="activityList"></div>
-      </section>
-    </main>
-
-    <!-- ================= PROFILE ================= -->
-    <main class="screen hidden" id="screen-profile" aria-label="Profile">
-      <header class="page-head"><h2>Profile</h2><span style="width:42px"></span></header>
-      <section class="profile-card card-anim">
-        <div class="avatar big" aria-hidden="true">R</div>
-        <div class="pc-info">
-          <strong>Ridwaan</strong>
-          <span>ridwaan@mobilestore.so</span>
-        </div>
-        <button class="btn btn-ghost" id="editProfile">Edit</button>
-      </section>
-
-      <div class="sec-head"><h3>My account</h3></div>
-      <div class="menu">
-        <button class="menu-item" id="miOrders"><span class="mi-ic">📦</span>Order history<span class="mi-val" id="orderCount"></span></button>
-        <button class="menu-item" id="miWishlist"><span class="mi-ic">🤍</span>Wishlist<span class="mi-val" id="wishCount"></span></button>
-        <button class="menu-item" id="miAddress"><span class="mi-ic">📍</span>Saved addresses<span class="mi-val">Hargeisa</span></button>
-        <button class="menu-item" id="miPayments"><span class="mi-ic">💳</span>Payment methods<span class="mi-val">Zaad</span></button>
-      </div>
-
-      <div class="sec-head"><h3>Settings</h3></div>
-      <div class="menu">
-        <div class="menu-item"><span class="mi-ic">🔔</span>Notifications
-          <label class="switch"><input type="checkbox" id="tgNotif" checked><span class="sw" aria-hidden="true"></span><span class="sr-only">Toggle notifications</span></label>
-        </div>
-        <div class="menu-item"><span class="mi-ic">🔒</span>Biometric lock
-          <label class="switch"><input type="checkbox" id="tgBio"><span class="sw" aria-hidden="true"></span><span class="sr-only">Toggle biometric lock</span></label>
-        </div>
-        <div class="menu-item"><span class="mi-ic">🌙</span>Dark mode
-          <label class="switch"><input type="checkbox" id="tgDark"><span class="sw" aria-hidden="true"></span><span class="sr-only">Toggle dark mode</span></label>
-        </div>
-        <div class="menu-item"><span class="mi-ic">🌐</span>Language
-          <label class="sr-only" for="langSel">Language</label>
-          <select id="langSel" class="mi-select">
-            <option value="en">English</option>
-            <option value="so">Soomaali</option>
-            <option value="ar">العربية</option>
-          </select>
-        </div>
-        <button class="menu-item" id="miHelp"><span class="mi-ic">💬</span>Help &amp; support</button>
-      </div>
-      <button class="btn btn-danger btn-big" id="logoutBtn">Log out</button>
-      <p class="version">Ridwaan Mobile Store · v1.0 · demo</p>
-    </main>
-
-    <!-- ================= PRODUCT DETAILS (overlay page) ================= -->
-    <main class="detail hidden" id="screen-detail" aria-label="Product details">
-      <header class="detail-head">
-        <button class="icon-btn solid" id="detailBack" aria-label="Back">
-          <svg viewBox="0 0 24 24"><path d="m14 6-6 6 6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg>
-        </button>
-        <button class="icon-btn solid" id="detailWish" aria-label="Toggle wishlist">♡</button>
-      </header>
-      <div id="detailBody"></div>
-      <div class="detail-cta">
-        <div class="cta-price"><span>Total</span><strong id="detailTotal">$0</strong></div>
-        <button class="btn btn-primary btn-big" id="detailAdd">Add to cart</button>
-      </div>
-    </main>
-
-    <!-- ================= BOTTOM NAV ================= -->
-    <nav class="bottom-nav" aria-label="Main navigation">
-      <button class="tab active" data-tab="home" aria-label="Home">
-        <svg viewBox="0 0 24 24"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6h-4v6H5a1 1 0 0 1-1-1Z"/></svg><span>Home</span>
-      </button>
-      <button class="tab" data-tab="shop" aria-label="Shop">
-        <svg viewBox="0 0 24 24"><path d="M6 7V6a6 6 0 1 1 12 0v1h2.1a1 1 0 0 1 1 .9l1 12a1 1 0 0 1-1 1.1H2.9a1 1 0 0 1-1-1.1l1-12a1 1 0 0 1 1-.9Zm2 0h8V6a4 4 0 0 0-8 0Z"/></svg><span>Shop</span>
-      </button>
-      <button class="tab" data-tab="cart" aria-label="Cart">
-        <svg viewBox="0 0 24 24"><path d="M3 4h2l2.5 11.5A2 2 0 0 0 9.45 17H18a2 2 0 0 0 1.94-1.5L21.8 9H6.2M9.5 21a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Zm8.5 0a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/></svg><span>Cart</span>
-        <span class="badge hidden" id="cartBadge">0</span>
-      </button>
-      <button class="tab" data-tab="rewards" aria-label="Rewards">
-        <svg viewBox="0 0 24 24"><path d="M12 2 9.6 8.2 3 8.6l5 4.3-1.6 6.5L12 15.9l5.6 3.5L16 12.9l5-4.3-6.6-.4Z"/></svg><span>Rewards</span>
-      </button>
-      <button class="tab" data-tab="profile" aria-label="Profile">
-        <svg viewBox="0 0 24 24"><path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Zm0 2c-4 0-8 2-8 5.5V21h16v-1.5C20 16 16 14 12 14Z"/></svg><span>Profile</span>
-      </button>
-    </nav>
-
-    <!-- ================= SHEETS & OVERLAY ================= -->
-    <div class="overlay hidden" id="overlay" tabindex="-1"></div>
-
-    <div class="sheet hidden" id="checkoutSheet" role="dialog" aria-modal="true" aria-labelledby="ckTitle">
-      <div class="sheet-grip" aria-hidden="true"></div>
-      <h2 id="ckTitle">Checkout</h2>
-      <div class="ck-form">
-        <div class="f-field"><label for="ckName">Full name *</label><input id="ckName" type="text" autocomplete="name"></div>
-        <div class="f-field"><label for="ckPhone">Phone number *</label><input id="ckPhone" type="tel" inputmode="tel" placeholder="+252 63 0000000" autocomplete="tel"></div>
-        <div class="f-field"><label for="ckEmail">Email *</label><input id="ckEmail" type="email" autocomplete="email"></div>
-        <div class="f-field"><label for="ckAddress">Delivery address *</label><input id="ckAddress" type="text" autocomplete="street-address"></div>
-        <div class="f-field"><label for="ckCity">City *</label><input id="ckCity" type="text" autocomplete="address-level2" placeholder="Hargeisa"></div>
-        <fieldset class="f-field">
-          <legend>Payment method *</legend>
-          <div class="pay-grid" id="payGrid">
-            <label class="pay"><input type="radio" name="pay" value="Cash on Delivery" checked><span>💵 Cash on Delivery</span></label>
-            <label class="pay"><input type="radio" name="pay" value="Zaad"><span>📱 Zaad</span></label>
-            <label class="pay"><input type="radio" name="pay" value="eDahab"><span>📲 eDahab</span></label>
-            <label class="pay"><input type="radio" name="pay" value="Card"><span>💳 Credit / Debit Card</span></label>
-          </div>
-        </fieldset>
-        <div class="summary">
-          <div class="s-row"><span>Order summary</span><span id="ckItems"></span></div>
-          <div class="s-row s-total"><span>Total to pay</span><span id="ckTotal"></span></div>
-          <div class="s-row s-good"><span>Points you'll earn</span><span id="ckEarn"></span></div>
-        </div>
-        <p class="ck-err hidden" id="ckErr" role="alert"></p>
-        <button class="btn btn-primary btn-big" id="placeOrder">Place order</button>
-        <p class="ck-note">Demo checkout — no real payment is processed.</p>
-      </div>
-    </div>
-
-    <div class="sheet hidden" id="successSheet" role="dialog" aria-modal="true" aria-labelledby="okTitle">
-      <div class="ok-burst" aria-hidden="true">✓</div>
-      <h2 id="okTitle">Order placed!</h2>
-      <p class="ok-line" id="okName"></p>
-      <p class="ok-order" id="okNumber"></p>
-      <div class="summary">
-        <div class="s-row s-total"><span>Total paid</span><span id="okTotal"></span></div>
-        <div class="s-row s-good"><span>Points earned</span><span id="okPoints"></span></div>
-      </div>
-      <button class="btn btn-primary btn-big" id="okDone">Continue shopping</button>
-    </div>
-
-    <div class="sheet hidden" id="goldSheet" role="dialog" aria-modal="true" aria-labelledby="goldTitle">
-      <div class="gold-medal" aria-hidden="true">🏆</div>
-      <h2 id="goldTitle">You're Gold</h2>
-      <p class="ok-line">Congratulations, Ridwaan — you've unlocked Gold membership.</p>
-      <ul class="benefits">
-        <li>🚚 Free delivery on every order</li>
-        <li>💰 1.5× points on all purchases</li>
-        <li>🎂 Birthday bonus of 200 points</li>
-        <li>⚡ Priority support</li>
-      </ul>
-      <button class="btn btn-primary btn-big" id="goldView">View my rewards</button>
-    </div>
-
-    <div class="sheet hidden" id="listSheet" role="dialog" aria-modal="true" aria-labelledby="listTitle">
-      <div class="sheet-grip" aria-hidden="true"></div>
-      <h2 id="listTitle"></h2>
-      <div id="listBody"></div>
-    </div>
-
-    <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
-    <canvas id="confetti" aria-hidden="true"></canvas>
-  </div>
-</div>
-<script src="script.js"></script>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></symbol>
+    <symbol id="i-shop" viewBox="0 0 24 24"><path d="M4 10v10h16V10M3 4h18l-2 6H5L3 4Zm6 6v3m6-3v3"/></symbol>
+    <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3 4h2l2.2 10.2a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H7m3 12h.01M17 20h.01"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><path d="M4 10h16v11H4Zm-1-5h18v5H3Zm9 0v16M12 5H8.5A2.5 2.5 0 1 1 11 2.5Zm0 0h3.5A2.5 2.5 0 1 0 13 2.5Z"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h10m4 0h2M4 17h2m4 0h10M14 4v6M6 14v6"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Zm-8 12h4"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16m-10 4v6m4-6v6M9 7l1-3h4l1 3m3 0-1 14H7L6 7"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3 6 7 .9-5 4.8 1.3 7-6.3-3.3-6.3 3.3 1.3-7-5-4.8L9 8Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  </svg>
+  <script src="script.js"></script>
 </body>
 </html>
