@@ -1,0 +1,14 @@
+/* Image clarity fix: keep product/category imagery bright and true to source. */
+.product-media img,
+.category-card img,
+.category-image img,
+.categories img {
+  mix-blend-mode: normal !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* Preserve the existing card layout while avoiding dark tinting on imagery. */
+.product-media {
+  isolation: isolate;
+}
