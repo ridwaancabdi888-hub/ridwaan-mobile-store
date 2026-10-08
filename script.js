@@ -38,6 +38,7 @@ let installPromptEvent = null;
 const app = document.getElementById('appView');
 const nav = document.getElementById('bottomNav');
 const modalRoot = document.getElementById('modalRoot');
+const dialogManager = RidwaanDialogs.createDialogManager(modalRoot);
 
 const icon = (name, cls='') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"></use></svg>`;
 const money = n => `$${Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
@@ -58,7 +59,7 @@ function init(){
   if(!user){state.session=null;renderAuth('signin')}
   else if(['admin','manager'].includes(user.role)) setPage('admin')
   else {renderNav();renderSkeleton();setTimeout(()=>setPage('home'),650)}
-  window.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+  window.addEventListener('keydown',dialogManager.handleKeydown);
 }
 function isStandalone(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
 function updateInstallUI(){const button=document.getElementById('pwaInstallFab');if(button)button.hidden=isStandalone()}
@@ -207,7 +208,7 @@ function placeOrder(e){
   const user=currentUser();const order={number,date:new Date().toISOString(),customerId:user?.id||null,customer:data.name,email:data.email,phone:data.phone,address:data.address,city:data.city,total:t.total,earned,items:state.cart.map(x=>({...x})),payment:data.payment,paymentStatus:data.payment==='Cash on Delivery'?'Pending':'Submitted',status:'Processing'};state.orders.unshift(order);state.points=Math.max(0,state.points-spent)+earned;state.profile={...state.profile,name:data.name,email:data.email,phone:data.phone,address:data.address,city:data.city};if(user){user.name=data.name;user.email=data.email;user.phone=data.phone}state.cart=[];state.promo='';state.usePoints=false;save();renderNav();
   openSuccess(order);
 }
-function openSuccess(order){modalRoot.innerHTML=`<div class="sheet success-sheet" role="dialog" aria-modal="true"><div class="grabber"></div><div class="success-badge">✓</div><h2>Order confirmed!</h2><p>Thanks, ${safe(order.customer)}. Your new phone journey starts now.</p><div class="success-data"><div class="summary-row"><span>Order number</span><strong>${order.number}</strong></div><div class="summary-row"><span>Total paid</span><strong>${money(order.total)}</strong></div><div class="summary-row"><span>Reward points earned</span><strong>+${order.earned}</strong></div></div><button class="primary-btn" onclick="closeSheet();setPage('home');confetti()">Continue Shopping</button></div>`;confetti()}
+function openSuccess(order){openSheet(`<div class="success-badge">✓</div><h2>Order confirmed!</h2><p>Thanks, ${safe(order.customer)}. Your new phone journey starts now.</p><div class="success-data"><div class="summary-row"><span>Order number</span><strong>${order.number}</strong></div><div class="summary-row"><span>Total paid</span><strong>${money(order.total)}</strong></div><div class="summary-row"><span>Reward points earned</span><strong>+${order.earned}</strong></div></div><button class="primary-btn" onclick="closeSheet();setPage('home');confetti()">Continue Shopping</button>`,'success-sheet');confetti()}
 
 function membership(){if(state.points>=3000)return 'Platinum';if(state.points>=1800)return 'Gold';if(state.points>=1000)return 'Silver';return 'Bronze'}
 function renderRewards(){
@@ -297,8 +298,8 @@ function showExportData(){const data=JSON.stringify({products:PRODUCTS,users:sta
 function copyExportData(){const el=document.getElementById('exportData');el.select();try{document.execCommand('copy');toast('Store data copied')}catch{toast('Select and copy the JSON manually','!')}}
 
 function infoSheet(title,text){openSheet(`<div class="sheet-head"><h2>${safe(title)}</h2><button class="icon-btn close" onclick="closeSheet()">${icon('x')}</button></div><p style="color:var(--muted);font-size:12px;line-height:1.7">${safe(text)}</p><button class="primary-btn" onclick="closeSheet()">Got it</button>`)}
-function openSheet(content){modalRoot.innerHTML=`<div class="sheet" role="dialog" aria-modal="true"><div class="grabber"></div>${content}</div>`;modalRoot.onclick=e=>{if(e.target===modalRoot)closeSheet()};setTimeout(()=>modalRoot.querySelector('button,input')?.focus(),100)}
-function closeSheet(){modalRoot.innerHTML='';modalRoot.onclick=null}
+function openSheet(content,extraClass=''){dialogManager.open(content,extraClass)}
+function closeSheet(){dialogManager.close()}
 function toast(message,mark='✓'){const el=document.createElement('div');el.className='toast';el.innerHTML=`<i>${mark}</i><span>${safe(message)}</span>`;document.getElementById('toastRegion').appendChild(el);setTimeout(()=>{el.style.opacity='0';el.style.transform='translateY(-10px)';setTimeout(()=>el.remove(),250)},2300)}
 function confetti(){const colors=['#f2b72b','#db4f16','#ffdf83','#8b3512'];for(let i=0;i<24;i++){const s=document.createElement('i');s.style.cssText=`position:fixed;z-index:90;left:${45+Math.random()*10}%;top:42%;width:${4+Math.random()*5}px;height:${6+Math.random()*7}px;background:${colors[i%colors.length]};border-radius:2px;pointer-events:none;transition:transform 1.1s cubic-bezier(.2,.7,.3,1),opacity 1.1s`;document.body.appendChild(s);requestAnimationFrame(()=>{s.style.transform=`translate(${(Math.random()-.5)*340}px,${Math.random()*420-210}px) rotate(${Math.random()*600}deg)`;s.style.opacity='0'});setTimeout(()=>s.remove(),1200)}}
 
