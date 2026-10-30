@@ -24,9 +24,7 @@ const DEFAULTS = {
   ],
   profile:{name:'Ridwaan',email:'ridwaan@example.com',phone:'',address:'',city:'Hargeisa'}
 };
-const state = {...DEFAULTS, ...readJSON('rms_state',{})};
-state.profile = {...DEFAULTS.profile,...(state.profile||{})};
-state.users = Array.isArray(state.users) ? state.users : DEFAULTS.users.map(u=>({...u}));
+const state = RidwaanState.normalizeStoreState(DEFAULTS, readJSON('rms_state',{}));
 if(!state.users.some(u=>u.role==='admin')) state.users.unshift({...DEFAULTS.users[0]});
 let PRODUCTS = Array.isArray(state.products)&&state.products.length ? state.products : SEED_PRODUCTS.map(p=>({...p}));
 state.products = PRODUCTS;
