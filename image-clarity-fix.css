@@ -12,3 +12,36 @@
 .product-media {
   isolation: isolate;
 }
+
+/* Icon sizing fix.
+   Icons that had no context-specific size fell back to the browser default SVG size
+   (300x150), which blew up the product rating star and hid the quantity buttons' +/- icons. */
+
+/* Safety net: zero specificity via :where(), so every existing icon rule still wins. */
+:where(.phone-shell svg) {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+.detail-rating svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--gold);
+  stroke: var(--gold);
+}
+
+.qty-control button {
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+}
+
+.qty-control svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
