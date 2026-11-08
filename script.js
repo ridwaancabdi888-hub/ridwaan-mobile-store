@@ -24,7 +24,8 @@ const DEFAULTS = {
   ],
   profile:{name:'Ridwaan',email:'ridwaan@example.com',phone:'',address:'',city:'Hargeisa'}
 };
-const state = RidwaanState.normalizeStoreState(DEFAULTS, readJSON('rms_state',{}));
+const storeStorage = RidwaanStorage.createJsonStorage(() => localStorage);
+const state = RidwaanState.normalizeStoreState(DEFAULTS, storeStorage.read('rms_state',{}));
 if(!state.users.some(u=>u.role==='admin')) state.users.unshift({...DEFAULTS.users[0]});
 let PRODUCTS = Array.isArray(state.products)&&state.products.length ? state.products : SEED_PRODUCTS.map(p=>({...p}));
 state.products = PRODUCTS;
@@ -33,6 +34,7 @@ let selected = null;
 let detailChoice = {storage:'',color:'',qty:1};
 let goldShown = false;
 let installPromptEvent = null;
+let storageWarningShown = false;
 const app = document.getElementById('appView');
 const nav = document.getElementById('bottomNav');
 const modalRoot = document.getElementById('modalRoot');
@@ -41,8 +43,15 @@ const dialogManager = RidwaanDialogs.createDialogManager(modalRoot);
 const icon = (name, cls='') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"></use></svg>`;
 const money = n => `$${Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}`;
 const product = id => PRODUCTS.find(p=>p.id===Number(id));
-function readJSON(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}}
-function save(){localStorage.setItem('rms_state',JSON.stringify({...state,page:'home'}));document.body.classList.toggle('dark',state.theme==='dark');document.querySelector('meta[name="theme-color"]').content=state.theme==='dark'?'#171210':'#fbf5ef'}
+function save(){
+  const stored=storeStorage.write('rms_state',{...state,page:'home'});
+  document.body.classList.toggle('dark',state.theme==='dark');
+  document.querySelector('meta[name="theme-color"]').content=state.theme==='dark'?'#171210':'#fbf5ef';
+  if(!stored&&!storageWarningShown){
+    storageWarningShown=true;
+    setTimeout(()=>toast('Device storage is unavailable. Changes will last until this tab closes.','!'),0);
+  }
+}
 function safe(v=''){return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function hashText(value=''){let h=2166136261;for(let i=0;i<value.length;i++){h^=value.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)}
 function currentUser(){return state.users.find(u=>u.id===state.session?.userId&&u.status==='active')||null}
