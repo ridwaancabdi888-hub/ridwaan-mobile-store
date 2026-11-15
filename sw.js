@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ridwaan-store-v2.6.0';
+const CACHE_NAME = 'ridwaan-store-v2.6.1';
 const APP_SHELL = [
   '/',
   '/index.html',
@@ -26,21 +26,28 @@ self.addEventListener('activate', event => {
   );
 });
 
+async function handleNavigation(request) {
+  try {
+    const response = await fetch(request);
+
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put('/index.html', response.clone());
+    }
+
+    return response;
+  } catch {
+    return caches.match('/index.html');
+  }
+}
+
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
 
   if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put('/index.html', copy));
-          return response;
-        })
-        .catch(() => caches.match('/index.html'))
-    );
+    event.respondWith(handleNavigation(event.request));
     return;
   }
 

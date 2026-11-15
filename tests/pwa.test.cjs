@@ -25,6 +25,47 @@ function assertProjectFile(asset) {
   assert.equal(fs.existsSync(file), true, `${asset} must exist in the repository`);
 }
 
+function createServiceWorkerHarness({networkResponse, networkError, fallback} = {}) {
+  const listeners = {};
+  const writes = [];
+  const sandbox = {
+    URL,
+    self: {
+      location: {origin: 'https://store.test'},
+      clients: {claim: async () => {}},
+      skipWaiting() {},
+      addEventListener(type, handler) { listeners[type] = handler; }
+    },
+    caches: {
+      async open() {
+        return {
+          async addAll() {},
+          async put(key, response) { writes.push({key, response}); }
+        };
+      },
+      async keys() { return []; },
+      async delete() { return true; },
+      async match(key) { return key === '/index.html' ? fallback : undefined; }
+    },
+    async fetch() {
+      if (networkError) throw networkError;
+      return networkResponse;
+    }
+  };
+
+  vm.runInNewContext(serviceWorker, sandbox);
+  return {listeners, writes};
+}
+
+function navigationEvent(listener) {
+  let responsePromise;
+  listener({
+    request: {method: 'GET', mode: 'navigate', url: 'https://store.test/shop'},
+    respondWith(value) { responsePromise = Promise.resolve(value); }
+  });
+  return responsePromise;
+}
+
 test('the service worker pre-caches every local asset required by index.html', () => {
   const shell = new Set(appShellAssets());
   const references = [...indexHtml.matchAll(/<(?:link|script)\b[^>]*(?:href|src)=["']([^"']+)["']/gi)]
@@ -60,4 +101,38 @@ test('the web manifest points to valid in-scope files', () => {
 test('the page registers the repository service worker', () => {
   const script = fs.readFileSync(path.join(projectRoot, 'script.js'), 'utf8');
   assert.match(script, /navigator\.serviceWorker\.register\(['"]\.\/sw\.js['"]\)/);
+});
+
+test('successful navigation refreshes the offline fallback before resolving', async () => {
+  const cachedCopy = {source: 'network copy'};
+  const response = {ok: true, clone: () => cachedCopy};
+  const {listeners, writes} = createServiceWorkerHarness({networkResponse: response});
+
+  const result = await navigationEvent(listeners.fetch);
+
+  assert.equal(result, response);
+  assert.deepEqual(writes, [{key: '/index.html', response: cachedCopy}]);
+});
+
+test('failed HTTP navigation does not replace the working offline fallback', async () => {
+  const response = {ok: false, status: 404, clone() { throw new Error('must not clone'); }};
+  const {listeners, writes} = createServiceWorkerHarness({networkResponse: response});
+
+  const result = await navigationEvent(listeners.fetch);
+
+  assert.equal(result, response);
+  assert.deepEqual(writes, []);
+});
+
+test('offline navigation returns the cached app shell', async () => {
+  const fallback = {ok: true, source: 'cache'};
+  const {listeners, writes} = createServiceWorkerHarness({
+    networkError: new Error('offline'),
+    fallback
+  });
+
+  const result = await navigationEvent(listeners.fetch);
+
+  assert.equal(result, fallback);
+  assert.deepEqual(writes, []);
 });
